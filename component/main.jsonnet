@@ -2,6 +2,7 @@
 local com = import 'lib/commodore.libjsonnet';
 local kap = import 'lib/kapitan.libjsonnet';
 local kube = import 'lib/kube.libjsonnet';
+local oauth = import 'lib/openshift4-oauth.libjsonnet';
 local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.openshift4_oauth;
@@ -23,6 +24,37 @@ local template = com.namespaced(params.namespace, kube.Secret('oauth-templates')
   },
 });
 
+local secrets = [
+  com.namespaced(params.namespace, kube.Secret(oauth.RefName(idp.name)) {
+    data: {
+      bindPassword: idp.ldap.bindPassword,
+    },
+  })
+  for idp in params.identityProviders
+  if idp.type == 'LDAP'
+];
+
+local configs = [
+  com.namespaced(params.namespace, kube.ConfigMap(oauth.RefName(idp.name)) {
+    data: {
+      'ca.crt': idp.ldap.ca,
+    },
+  })
+  for idp in params.identityProviders
+  if idp.type == 'LDAP'
+];
+
+local identityProviders = [
+  idp {
+    ldap+: {
+      ca: { name: oauth.RefName(idp.name) },
+      bindPassword: { name: oauth.RefName(idp.name) },
+    },
+  }
+  for idp in params.identityProviders
+  if idp.type == 'LDAP'
+];
+
 local clusterOAuth = kube._Object('config.openshift.io/v1', 'OAuth', 'cluster') {
   spec: {
     [if hasTemplates then 'templates']: {
@@ -30,7 +62,7 @@ local clusterOAuth = kube._Object('config.openshift.io/v1', 'OAuth', 'cluster') 
       [if hasLoginTemplate then 'login']: { name: template.metadata.name },
       [if hasProviderSelectionTemplate then 'providerSelection']: { name: template.metadata.name },
     },
-    [if hasIdentityProviders then 'identityProviders']: params.identityProviders,
+    [if hasIdentityProviders then 'identityProviders']: identityProviders,
     [if hasTokenConfig then 'tokenConfig']: {
       [if hasTokenTimeouts then 'accessTokenInactivityTimeoutSeconds']: params.token.timeoutSeconds,
       [if hasTokenMaxAge then 'accessTokenMaxAgeSeconds']: params.token.maxAgeSeconds,
@@ -38,8 +70,11 @@ local clusterOAuth = kube._Object('config.openshift.io/v1', 'OAuth', 'cluster') 
   },
 };
 
+
 // Define outputs below
 {
   [if hasTemplates then '01_template']: template,
-  '05_oauth': clusterOAuth,
+  [if std.length(secrets) > 0 then '02_secrets']: secrets,
+  [if std.length(configs) > 0 then '03_configs']: configs,
+  '10_oauth': clusterOAuth,
 }
