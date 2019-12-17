@@ -5,6 +5,7 @@ parameters:
     identityProviders: []
 
     templates:
+      # `error` has a speacial meaning for jsonnet. Using `err` isntead.
       err: ''
       login: ''
       providerSelection: ''
