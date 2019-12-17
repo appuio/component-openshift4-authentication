@@ -1,0 +1,3 @@
+parameters:
+  openshift4_oauth:
+    namespace: syn-openshift4-oauth
