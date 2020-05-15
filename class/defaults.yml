@@ -1,3 +1,14 @@
 parameters:
   openshift4_oauth:
-    namespace: syn-openshift4-oauth
+    namespace: openshift-config
+
+    identityProviders: []
+
+    templates:
+      err: ''
+      login: ''
+      providerSelection: ''
+
+    token:
+      timeoutSeconds: ~
+      maxAgeSeconds: ~
