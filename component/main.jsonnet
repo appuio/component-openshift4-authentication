@@ -26,7 +26,13 @@ local template = com.namespaced(params.namespace, kube.Secret('oauth-templates')
 
 local secrets = [
   com.namespaced(params.namespace, kube.Secret(oauth.RefName(idp.name)) {
-    data: {
+    metadata+: {
+      annotations+: {
+        'argocd.argoproj.io/sync-options': 'Prune=false',
+        'argocd.argoproj.io/compare-options': 'IgnoreExtraneous',
+      },
+    },
+    stringData+: {
       bindPassword: idp.ldap.bindPassword,
     },
   })
@@ -36,6 +42,12 @@ local secrets = [
 
 local configs = [
   com.namespaced(params.namespace, kube.ConfigMap(oauth.RefName(idp.name)) {
+    metadata+: {
+      annotations+: {
+        'argocd.argoproj.io/sync-options': 'Prune=false',
+        'argocd.argoproj.io/compare-options': 'IgnoreExtraneous',
+      },
+    },
     data: {
       'ca.crt': idp.ldap.ca,
     },
