@@ -1,0 +1,8 @@
+/**
+ * \file Library with public methods provided by component openshift4-oauth.
+ */
+
+// Export library functions here
+{
+  RefName(name): std.strReplace(std.asciiLower(name), ' ', '-'),
+}

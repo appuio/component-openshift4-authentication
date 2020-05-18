@@ -1,3 +1,15 @@
 parameters:
   openshift4_oauth:
-    namespace: syn-openshift4-oauth
+    namespace: openshift-config
+
+    identityProviders: []
+
+    templates:
+      # `error` has a speacial meaning for jsonnet. Using `err` isntead.
+      err: ''
+      login: ''
+      providerSelection: ''
+
+    token:
+      timeoutSeconds: ~
+      maxAgeSeconds: ~
