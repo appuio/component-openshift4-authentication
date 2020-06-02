@@ -23,8 +23,10 @@ local syncConfig(namespace, idp) =
   [
     com.namespaced(namespace, kube.Secret(name) {
       stringData: {
+        'blacklist.txt': if std.objectHas(idp.ldap.sync, 'blacklist') then idp.ldap.sync.blacklist else '',
         'ca-bundle.crt': idp.ldap.ca,
         'config.yaml': std.manifestYamlDoc(syncCfg),
+        'whitelist.txt': if std.objectHas(idp.ldap.sync, 'whitelist') then idp.ldap.sync.whitelist else '',
       },
     }),
   ];
