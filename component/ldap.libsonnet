@@ -6,7 +6,7 @@ local inv = kap.inventory();
 
 local params = inv.parameters.openshift4_oauth;
 
-local syncConfig(namespace, idp) =
+local syncConfig(namespace, idp, sa) =
   local name = 'ldap-sync-' + oauth.RefName(idp.name);
   local syncCfg = {
     kind: 'LDAPSyncConfig',
@@ -27,6 +27,42 @@ local syncConfig(namespace, idp) =
         'ca-bundle.crt': idp.ldap.ca,
         'config.yaml': std.manifestYamlDoc(syncCfg),
         'whitelist.txt': if std.objectHas(idp.ldap.sync, 'whitelist') then idp.ldap.sync.whitelist else '',
+      },
+    }),
+
+    com.namespaced(namespace, kube.CronJob(name) {
+      spec+: {
+        schedule: '*/1 * * * *',
+        jobTemplate+: {
+          spec+: {
+            template+: {
+              spec+: {
+                containers: [
+                  kube.Container('sync') {
+                    image: 'image-registry.openshift-image-registry.svc:5000/openshift/cli',
+                    command: [
+                      'oc',
+                      'adm',
+                      'groups',
+                      'sync',
+                      '--sync-config=/etc/sync-config/config.yaml',
+                      '--confirm',
+                      '--blacklist=/etc/sync-config/blacklist.txt',
+                      '--whitelist=/etc/sync-config/whitelist.txt',
+                    ],
+                    volumeMounts_+: {
+                      'sync-config': {mountPath: '/etc/sync-config'},
+                    },
+                  },
+                ],
+                serviceAccountName: sa,
+                volumes_+: {
+                  'sync-config': {secret: {secretName: name}},
+                },
+              },
+            },
+          },
+        },
       },
     }),
   ];

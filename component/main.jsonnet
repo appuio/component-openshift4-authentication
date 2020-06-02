@@ -68,11 +68,25 @@ local identityProviders = [
   if idp.type == 'LDAP'
 ];
 
-local ldapSync = [
-  ldap.syncConfig(params.namespace, idp)
-  for idp in params.identityProviders
-  if idp.type == 'LDAP'
-];
+local ldapSync =
+  local ldapSyncServiceAccount = com.namespaced(params.namespace, kube.ServiceAccount('ldap-sync'));
+
+  [
+    ldapSyncServiceAccount,
+    kube.ClusterRoleBinding('ldap-sync') {
+      subjects_: [ldapSyncServiceAccount],
+      roleRef: {
+        kind: 'ClusterRole',
+        metadata: {
+          name: 'cluster-admin',
+        },
+      },
+    },
+  ] + std.flattenArrays([
+    ldap.syncConfig(params.namespace, idp, ldapSyncServiceAccount.metadata.name)
+    for idp in params.identityProviders
+    if idp.type == 'LDAP'
+  ]);
 
 local clusterOAuth = kube._Object('config.openshift.io/v1', 'OAuth', 'cluster') {
   spec: {
@@ -96,5 +110,5 @@ local clusterOAuth = kube._Object('config.openshift.io/v1', 'OAuth', 'cluster') 
   [if std.length(secrets) > 0 then '02_secrets']: secrets,
   [if std.length(configs) > 0 then '03_configs']: configs,
   '10_oauth': clusterOAuth,
-  [ if std.length(ldapSync) > 0 then '20_ldap_sync']: ldapSync,
+  [ if std.length(ldapSync) > 2 then '20_ldap_sync']: ldapSync,
 }
