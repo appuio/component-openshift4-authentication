@@ -3,7 +3,7 @@ local com = import 'lib/commodore.libjsonnet';
 local kap = import 'lib/kapitan.libjsonnet';
 local kube = import 'lib/kube.libjsonnet';
 local oauth = import 'lib/openshift4-oauth.libjsonnet';
-local ldap = import 'ldap-sync.libsonnet';
+local ldap = import 'ldap.libsonnet';
 local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.openshift4_oauth;
@@ -69,7 +69,7 @@ local identityProviders = [
 ];
 
 local ldapSync = [
-  ldap.syncConfig(idp)
+  ldap.syncConfig(params.namespace, idp)
   for idp in params.identityProviders
   if idp.type == 'LDAP'
 ];
@@ -81,7 +81,7 @@ local clusterOAuth = kube._Object('config.openshift.io/v1', 'OAuth', 'cluster') 
       [if hasLoginTemplate then 'login']: { name: template.metadata.name },
       [if hasProviderSelectionTemplate then 'providerSelection']: { name: template.metadata.name },
     },
-    [if hasIdentityProviders then 'identityProviders']: identityProviders,
+    [if hasIdentityProviders then 'identityProviders']: ldap.withoutLdapSyncConfig(identityProviders),
     [if hasTokenConfig then 'tokenConfig']: {
       [if hasTokenTimeouts then 'accessTokenInactivityTimeoutSeconds']: params.token.timeoutSeconds,
       [if hasTokenMaxAge then 'accessTokenMaxAgeSeconds']: params.token.maxAgeSeconds,

@@ -6,7 +6,8 @@ local inv = kap.inventory();
 
 local params = inv.parameters.openshift4_oauth;
 
-local syncConfig(idp) = [
+local syncConfig(namespace, idp) =
+  local name = 'ldap-sync-' + oauth.RefName(idp.name);
   local syncCfg = {
     kind: 'LDAPSyncConfig',
     apiVersion: 'v1',
@@ -14,46 +15,28 @@ local syncConfig(idp) = [
     bindDN: idp.ldap.bindDN,
     bindPassword: idp.ldap.bindPassword,
     ca: '/etc/sync-config/ca-bundle.crt',
-    rfc2307: {
-      groupsQuery: {
-        baseDN: 'ou=groups,dc=example,dc=com',
-        scope: 'sub',
-        derefAliases: 'never',
-        pageSize: 0,
-      },
-      groupUIDAttribute: 'dn',
-      groupNameAttributes: [
-        'cn',
-      ],
-      groupMembershipAttributes: [
-        'member',
-      ],
-      usersQuery: {
-        baseDN: 'ou=users,dc=example,dc=com',
-        scope: 'sub',
-        derefAliases: 'never',
-        pageSize: 0,
-      },
-      userUIDAttribute: 'dn',
-      userNameAttributes: [
-        'mail',
-      ],
-      tolerateMemberNotFoundErrors: false,
-      tolerateMemberOutOfScopeErrors: false,
-    },
+    [if std.objectHas(idp.ldap.sync, 'rfc2307') then 'rfc2307']: idp.ldap.sync.rfc2307,
+    [if std.objectHas(idp.ldap.sync, 'activeDirectory') then 'activeDirectory']: idp.ldap.sync.activeDirectory,
+    [if std.objectHas(idp.ldap.sync, 'augmentedActiveDirectory') then 'augmentedActiveDirectory']: idp.ldap.sync.augmentedActiveDirectory,
   };
-  local configMap = kube.Secret('ldap-sync-' + oauth.RefName(idp.name)) {
-    metadata+: {
-      namespace: params.namespace,
-    },
-    stringData: {
-      'ca-bundle.crt': idp.ldap.ca,
-      'config.yaml': std.manifestYamlDoc(syncCfg),
-    },
-  };
-  configMap,
-];
+
+  [
+    com.namespaced(namespace, kube.Secret(name) {
+      stringData: {
+        'ca-bundle.crt': idp.ldap.ca,
+        'config.yaml': std.manifestYamlDoc(syncCfg),
+      },
+    }),
+  ];
+
+local replaceField(obj, name, replacement) = std.prune(std.mapWithKey(function(k, v)
+  if k == name
+  then replacement
+  else v, obj));
+
+local withoutLdapSyncConfig(idps) = std.map(function(idp) replaceField(idp, 'ldap', replaceField(idp.ldap, 'sync', null)), idps);
 
 {
   syncConfig: syncConfig,
+  withoutLdapSyncConfig: withoutLdapSyncConfig,
 }
