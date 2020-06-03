@@ -8,13 +8,20 @@ local params = inv.parameters.openshift4_oauth;
 
 local syncConfig(namespace, idp, sa) =
   local name = 'ldap-sync-' + oauth.RefName(idp.name);
+  local mount = '/etc/sync-config/';
+  local files = {
+    caBundle: 'ca-bundle.crt',
+    config: 'config.yaml',
+    blacklist: 'blacklist.txt',
+    whitelist: 'whitelist.txt',
+  };
   local syncCfg = {
     kind: 'LDAPSyncConfig',
     apiVersion: 'v1',
     url: idp.ldap.url,
     bindDN: idp.ldap.bindDN,
     bindPassword: idp.ldap.bindPassword,
-    ca: '/etc/sync-config/ca-bundle.crt',
+    ca: mount + files.caBundle,
     [if std.objectHas(idp.ldap.sync, 'rfc2307') then 'rfc2307']: idp.ldap.sync.rfc2307,
     [if std.objectHas(idp.ldap.sync, 'activeDirectory') then 'activeDirectory']: idp.ldap.sync.activeDirectory,
     [if std.objectHas(idp.ldap.sync, 'augmentedActiveDirectory') then 'augmentedActiveDirectory']: idp.ldap.sync.augmentedActiveDirectory,
@@ -23,13 +30,14 @@ local syncConfig(namespace, idp, sa) =
   [
     com.namespaced(namespace, kube.Secret(name) {
       stringData: {
-        'blacklist.txt': if std.objectHas(idp.ldap.sync, 'blacklist') then idp.ldap.sync.blacklist else '',
-        'ca-bundle.crt': idp.ldap.ca,
-        'config.yaml': std.manifestYamlDoc(syncCfg),
-        'whitelist.txt': if std.objectHas(idp.ldap.sync, 'whitelist') then idp.ldap.sync.whitelist else '',
+        [files.blacklist]: if std.objectHas(idp.ldap.sync, 'blacklist') then idp.ldap.sync.blacklist else '',
+        [files.caBundle]: idp.ldap.ca,
+        [files.config]: std.manifestYamlDoc(syncCfg),
+        [files.whitelist]: if std.objectHas(idp.ldap.sync, 'whitelist') then idp.ldap.sync.whitelist else '',
       },
     }),
 
+    local volume = 'sync-config';
     com.namespaced(namespace, kube.CronJob(name) {
       spec+: {
         schedule: if std.objectHas(idp.ldap.sync, 'schedule') then idp.ldap.sync.schedule else params.ldapSync.schedule,
@@ -45,19 +53,19 @@ local syncConfig(namespace, idp, sa) =
                       'adm',
                       'groups',
                       'sync',
-                      '--sync-config=/etc/sync-config/config.yaml',
+                      '--sync-config=' + mount + files.config,
                       '--confirm',
-                      '--blacklist=/etc/sync-config/blacklist.txt',
-                      '--whitelist=/etc/sync-config/whitelist.txt',
+                      '--blacklist=' + mount + files.blacklist,
+                      '--whitelist=' + mount + files.whitelist,
                     ],
                     volumeMounts_+: {
-                      'sync-config': {mountPath: '/etc/sync-config'},
+                      [volume]: {mountPath: mount},
                     },
                   },
                 ],
                 serviceAccountName: sa,
                 volumes_+: {
-                  'sync-config': {secret: {secretName: name}},
+                  [volume]: {secret: {secretName: name}},
                 },
               },
             },
