@@ -16,3 +16,8 @@ parameters:
 
     ldapSync:
       schedule: '*/5 * * * *'
+
+    images:
+      sync:
+        image: image-registry.openshift-image-registry.svc:5000/openshift/cli
+        tag: ~

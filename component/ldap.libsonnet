@@ -39,7 +39,7 @@ local syncConfig(namespace, idp, sa) =
               spec+: {
                 containers: [
                   kube.Container('sync') {
-                    image: 'image-registry.openshift-image-registry.svc:5000/openshift/cli',
+                    image: std.join(':', std.prune([params.images.sync.image, params.images.sync.tag])),
                     command: [
                       'oc',
                       'adm',
