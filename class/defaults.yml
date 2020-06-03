@@ -13,3 +13,6 @@ parameters:
     token:
       timeoutSeconds: ~
       maxAgeSeconds: ~
+
+    ldapSync:
+      schedule: '*/5 * * * *'

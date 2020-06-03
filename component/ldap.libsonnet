@@ -32,7 +32,7 @@ local syncConfig(namespace, idp, sa) =
 
     com.namespaced(namespace, kube.CronJob(name) {
       spec+: {
-        schedule: '*/1 * * * *',
+        schedule: if std.objectHas(idp.ldap.sync, 'schedule') then idp.ldap.sync.schedule else params.ldapSync.schedule,
         jobTemplate+: {
           spec+: {
             template+: {
