@@ -22,7 +22,7 @@ lint_jsonnet: $(FILES_JSONNET)
 
 .PHONY: lint_yaml
 lint_yaml: $(FILES_YAML)
-	yamllint -f parsable --no-warnings -- $?
+	yamllint -f parsable -c .yamllint.yaml --no-warnings -- $?
 
 .PHONY: format
 format: format_jsonnet
