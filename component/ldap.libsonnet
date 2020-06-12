@@ -59,13 +59,13 @@ local syncConfig(namespace, idp, sa) =
                       '--whitelist=' + mount + files.whitelist,
                     ],
                     volumeMounts_+: {
-                      [volume]: {mountPath: mount},
+                      [volume]: { mountPath: mount },
                     },
                   },
                 ],
                 serviceAccountName: sa,
                 volumes_+: {
-                  [volume]: {secret: {secretName: name}},
+                  [volume]: { secret: { secretName: name } },
                 },
               },
             },

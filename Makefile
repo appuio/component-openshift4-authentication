@@ -5,6 +5,11 @@ SHELL := bash
 .DELETE_ON_ERROR:
 .SUFFIXES:
 
+FILES_JSONNET ?= $(shell find . -type f -name '*.*jsonnet' -or -name '*.libsonnet')
+FILES_YAML ?= $(shell find . -type f -name '*.yaml' -or -name '*.yml')
+
+JSONNETFMT_ARGS ?= --in-place
+
 .PHONY: all
 all: lint
 
@@ -12,9 +17,16 @@ all: lint
 lint: lint_jsonnet lint_yaml
 
 .PHONY: lint_jsonnet
-lint_jsonnet: $(shell find . -type f -name '*.*jsonnet' -or -name '*.libsonnet')
-	jsonnetfmt --in-place --test -- $?
+lint_jsonnet: $(FILES_JSONNET)
+	jsonnetfmt $(JSONNETFMT_ARGS) --test -- $?
 
 .PHONY: lint_yaml
-lint_yaml: $(shell find . -type f -name '*.yaml' -or -name '*.yml')
+lint_yaml: $(FILES_YAML)
 	yamllint -f parsable --no-warnings -- $?
+
+.PHONY: format
+format: format_jsonnet
+
+.PHONY: format_jsonnet
+format_jsonnet: $(FILES_JSONNET)
+	jsonnetfmt $(JSONNETFMT_ARGS) -- $?
