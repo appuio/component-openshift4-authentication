@@ -13,7 +13,7 @@ Is this related to an issue/problem?
 -->
 
 ## Alternatives
-<?--
+<!--
 Can you achieve the same result doing it in an alternative way?
 Is the alternative considerable?
 -->

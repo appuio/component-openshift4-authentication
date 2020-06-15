@@ -8,11 +8,9 @@ Contributors guide: ./CONTRIBUTING.md
 ## Checklist
 <!-- Remove items that do not apply. For completed items, change [ ] to [x]. -->
 
-- [ ] **DO** keep pull requests small so they can be easily reviewed.
-- [ ] **DO** make sure linting passes.
-- [ ] **DO** update documentation.
-- [ ] **DO** update ./CHANGELOG.md.
-- [ ] **DO** link this PR to related issues.
-- [ ] **AVOID** breaking the continuous integration build.
+- [ ] keep pull requests small so they can be easily reviewed.
+- [ ] update documentation.
+- [ ] update ./CHANGELOG.md.
+- [ ] link this PR to related issues.
 
 <!-- _NOTE: these things are not required to open a PR and can be done afterwards / while the PR is open._ -->

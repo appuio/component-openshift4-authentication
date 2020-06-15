@@ -8,7 +8,7 @@ jobs:
   linting:
     runs-on: ubuntu-latest
     container:
-      image: docker.io/projectsyn/commodore-compontent-test:latest
+      image: docker.io/projectsyn/commodore-component-test:latest
     strategy:
       matrix:
         command:

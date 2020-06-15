@@ -7,4 +7,4 @@ Project Syn and this component, see https://syn.tools.
 ## Contributing and license
 
 This library is licensed under [BSD-3-Clause](LICENSE). For information about
-how to contribute  see [CONTRIBUTING](CONTRIBUTING.md)
+how to contribute see [CONTRIBUTING](CONTRIBUTING.md).

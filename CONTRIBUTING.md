@@ -22,4 +22,4 @@ done (read more about [pull requests](http://help.github.com/pull-requests/)).
 We are using `jsonnetfmt` and `yamllint` to ensure consistency. The
 [Makefile](Makefile) provides targets to invoke them.
 
-[PR]: https://github.com/appuio/component-openshift4-oauth/pulls)
+[PR]: https://github.com/appuio/component-openshift4-oauth/pulls
