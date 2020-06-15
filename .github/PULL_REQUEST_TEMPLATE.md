@@ -12,7 +12,7 @@ Contributors guide: ./CONTRIBUTING.md
 - [ ] **DO** make sure linting passes.
 - [ ] **DO** update documentation.
 - [ ] **DO** update ./CHANGELOG.md.
-- [ ] **DO** this PR link to related issues.
+- [ ] **DO** link this PR to related issues.
 - [ ] **AVOID** breaking the continuous integration build.
 
 <!-- _NOTE: these things are not required to open a PR and can be done afterwards / while the PR is open._ -->
