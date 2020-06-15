@@ -1,9 +1,9 @@
 // main template for openshift4-oauth
+local ldap = import 'ldap.libsonnet';
 local com = import 'lib/commodore.libjsonnet';
 local kap = import 'lib/kapitan.libjsonnet';
 local kube = import 'lib/kube.libjsonnet';
 local oauth = import 'lib/openshift4-oauth.libjsonnet';
-local ldap = import 'ldap.libsonnet';
 local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.openshift4_oauth;
@@ -110,5 +110,5 @@ local clusterOAuth = kube._Object('config.openshift.io/v1', 'OAuth', 'cluster') 
   [if std.length(secrets) > 0 then '02_secrets']: secrets,
   [if std.length(configs) > 0 then '03_configs']: configs,
   '10_oauth': clusterOAuth,
-  [ if std.length(ldapSync) > 2 then '20_ldap_sync']: ldapSync,
+  [if std.length(ldapSync) > 2 then '20_ldap_sync']: ldapSync,
 }
