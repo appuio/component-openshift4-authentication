@@ -1,13 +1,13 @@
 local com = import 'lib/commodore.libjsonnet';
 local kap = import 'lib/kapitan.libjsonnet';
 local kube = import 'lib/kube.libjsonnet';
-local oauth = import 'lib/openshift4-oauth.libjsonnet';
+local authentication = import 'lib/openshift4-authentication.libjsonnet';
 local inv = kap.inventory();
 
-local params = inv.parameters.openshift4_oauth;
+local params = inv.parameters.openshift4_authentication;
 
 local syncConfig(namespace, idp, sa) =
-  local name = 'ldap-sync-' + oauth.RefName(idp.name);
+  local name = 'ldap-sync-' + authentication.RefName(idp.name);
   local mount = '/etc/sync-config/';
   local files = {
     caBundle: 'ca-bundle.crt',
