@@ -1,5 +1,5 @@
-name: openshift4-oauth
-title: OpenShift 4 OAuth
+name: openshift4-authentication
+title: OpenShift 4 Authentication
 version: master
 start_page: ROOT:index.adoc
 nav:

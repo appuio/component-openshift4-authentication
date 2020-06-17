@@ -1,5 +1,5 @@
 /**
- * \file Library with public methods provided by component openshift4-oauth.
+ * \file Library with public methods provided by component openshift4-authentication.
  */
 
 // Export library functions here

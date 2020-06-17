@@ -1,5 +1,5 @@
 parameters:
-  openshift4_oauth:
+  openshift4_authentication:
     namespace: openshift-config
 
     identityProviders: []

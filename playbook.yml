@@ -1,14 +1,14 @@
 site:
-  title: "OpenShift 4 OAuth"
+  title: "OpenShift 4 Authentication"
   url: https://syn.tools/
-  start_page: openshift4-oauth::index.adoc
+  start_page: openshift4-authentication::index.adoc
   robots: disallow
 content:
   sources:
     - url: .
       branches: HEAD
       start_path: docs
-      edit_url: 'https://github.com/appuio/component-openshift4-oauth/edit/master/{path}'
+      edit_url: 'https://github.com/appuio/component-openshift4-authentication/edit/master/{path}'
 ui:
   bundle:
     url: https://github.com/vshn/antora-ui-default/releases/download/1.6/ui-bundle.zip

@@ -1,4 +1,4 @@
-# Commodore Component: OpenShift 4 OAuth
+# Commodore Component: OpenShift 4 Authentication
 
 This is a [Commodore](https://docs.syn.tools/commodore/index.html) Component which allows to manage the **OAuth configuration on an OpenShift 4 cluster**.
 
