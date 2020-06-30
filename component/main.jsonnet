@@ -75,7 +75,7 @@ local ldapSync =
     ldapSyncServiceAccount,
     kube.ClusterRoleBinding('ldap-sync') {
       subjects_: [ldapSyncServiceAccount],
-      roleRef: {
+      roleRef_: {
         kind: 'ClusterRole',
         metadata: {
           name: 'cluster-admin',

@@ -14,5 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial implementation allowing to manage identity providers. 
 - Faciltiy to manage LDAP group sync.
 
+### Fixed
+
+- ClusterRoleBinding for the LDAP sync job ([#10])
+
 [Unreleased]: https://github.com/appuio/component-openshift4-authentication/compare/ba4fee5..HEAD
 [#9]: https://github.com/appuio/component-openshift4-authentication/pull/9
+[#10]: https://github.com/appuio/component-openshift4-authentication/pull/10
