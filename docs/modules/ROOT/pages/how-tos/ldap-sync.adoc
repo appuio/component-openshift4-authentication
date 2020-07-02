@@ -1,0 +1,11 @@
+= LDAP Sync
+
+To trigger an LDAP sync, run the following command while logged in to the cluster:
+
+[source,console]
+----
+oc -n openshift-config \
+  create job \
+  --from cronjob/ldap-sync-vshn-ldap \
+  ldap-sync-$(date +"%Y-%m-%d")
+----

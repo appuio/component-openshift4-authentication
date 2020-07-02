@@ -37,10 +37,11 @@ local syncConfig(namespace, idp, sa) =
       },
     }),
 
+    local n = std.foldl(function(x, y) x + y, std.encodeUTF8(std.md5(inv.parameters.cluster.name)), 0);
     local volume = 'sync-config';
     com.namespaced(namespace, kube.CronJob(name) {
       spec+: {
-        schedule: if std.objectHas(idp.ldap.sync, 'schedule') then idp.ldap.sync.schedule else params.ldapSync.schedule,
+        schedule: if std.objectHas(idp.ldap.sync, 'schedule') then idp.ldap.sync.schedule else params.ldapSync.schedule % (n % 60),
         jobTemplate+: {
           spec+: {
             template+: {

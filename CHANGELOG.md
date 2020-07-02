@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Rename to `openshift4-authentication` ([#9])
+- Randomize the default schedule for LDAP sync ([#15])
 
 ### Added
 
@@ -25,3 +26,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#10]: https://github.com/appuio/component-openshift4-authentication/pull/10
 [#11]: https://github.com/appuio/component-openshift4-authentication/pull/11
 [#14]: https://github.com/appuio/component-openshift4-authentication/pull/14
+[#15]: https://github.com/appuio/component-openshift4-authentication/pull/15

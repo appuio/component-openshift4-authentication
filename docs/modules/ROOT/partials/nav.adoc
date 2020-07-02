@@ -1,1 +1,3 @@
 * xref:index.adoc[Home]
+* How-to guides
+** xref:ldap-sync.adoc[LDAP Sync]
