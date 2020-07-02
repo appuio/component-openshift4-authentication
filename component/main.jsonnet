@@ -4,6 +4,7 @@ local com = import 'lib/commodore.libjsonnet';
 local kap = import 'lib/kapitan.libjsonnet';
 local kube = import 'lib/kube.libjsonnet';
 local authentication = import 'lib/openshift4-authentication.libjsonnet';
+local rbac = import 'rbac.libsonnet';
 local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.openshift4_authentication;
@@ -111,4 +112,5 @@ local clusterOAuth = kube._Object('config.openshift.io/v1', 'OAuth', 'cluster') 
   [if std.length(configs) > 0 then '03_configs']: configs,
   '10_oauth': clusterOAuth,
   [if std.length(ldapSync) > 2 then '20_ldap_sync']: ldapSync,
+  '30_rbac': rbac,
 }

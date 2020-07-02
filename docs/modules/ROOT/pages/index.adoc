@@ -11,3 +11,18 @@ The values will be written to a secret which then gets referenced in the OAuth C
 As of know, the paramter `openshift4_authentication.identityProviders` can only handle provider configs of type LDAP.
 The documentation requires to configure the LDAP bind password as a secret, and the CA certificate as a config map, the component accepts their literal value.
 Secrets and config maps will be created and referenced as needed.
+
+
+== Cluster Admin Sudo
+
+RBAC rules are set up in order to allow a sudo like method to gain cluster-admin privileges.
+
+By default only `view` and `impersonate` permissions are granted to the group defined in `openshift4_authentication.sudoGroupName`.
+Using https://kubernetes.io/docs/reference/access-authn-authz/authentication/#user-impersonation[user impersonation], permissions can be escalated to full `cluster-admin`:
+
+[source,console]
+----
+oc --as cluster-admin get nodes
+----
+
+See https://openshift.docs.vshn.ch/oc4/how-tos/authentication/sudo.html[how-to] and https://openshift.docs.vshn.ch/oc4/explanations/sudo.html[explanation] for further details.

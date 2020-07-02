@@ -1,7 +1,9 @@
 parameters:
   openshift4_authentication:
     namespace: openshift-config
-
+    sudoGroupName: sudoers
+    # Username to be used for impersonation, aka sudo
+    adminUserName: cluster-admin
     identityProviders: []
 
     templates:
