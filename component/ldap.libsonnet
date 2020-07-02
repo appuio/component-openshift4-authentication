@@ -45,23 +45,25 @@ local syncConfig(namespace, idp, sa) =
           spec+: {
             template+: {
               spec+: {
-                containers: [
-                  kube.Container('sync') {
-                    image: std.join(':', std.prune([params.images.sync.image, params.images.sync.tag])),
-                    command: [
-                      'oc',
-                      'adm',
-                      'groups',
-                      'sync',
-                      '--sync-config=' + mount + files.config,
-                      '--confirm',
-                      '--blacklist=' + mount + files.blacklist,
-                      '--whitelist=' + mount + files.whitelist,
-                    ],
-                    volumeMounts_+: {
-                      [volume]: { mountPath: mount },
-                    },
+                local container(command) = kube.Container(command) {
+                  image: std.join(':', std.prune([params.images.sync.image, params.images.sync.tag])),
+                  command: [
+                    'oc',
+                    'adm',
+                    'groups',
+                    command,
+                    '--sync-config=' + mount + files.config,
+                    '--confirm',
+                    '--blacklist=' + mount + files.blacklist,
+                    '--whitelist=' + mount + files.whitelist,
+                  ],
+                  volumeMounts_+: {
+                    [volume]: { mountPath: mount },
                   },
+                },
+                containers: [
+                  container('sync'),
+                  container('prune'),
                 ],
                 serviceAccountName: sa,
                 volumes_+: {

@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial implementation allowing to manage identity providers. 
 - Faciltiy to manage LDAP group sync.
 - Sudo process for cluster-admin ([#11])
+- LDAP group pruning ([#14])
 
 ### Fixed
 
@@ -23,3 +24,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#9]: https://github.com/appuio/component-openshift4-authentication/pull/9
 [#10]: https://github.com/appuio/component-openshift4-authentication/pull/10
 [#11]: https://github.com/appuio/component-openshift4-authentication/pull/11
+[#14]: https://github.com/appuio/component-openshift4-authentication/pull/14
