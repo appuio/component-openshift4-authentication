@@ -67,6 +67,10 @@ local identityProviders = [
   }
   for idp in params.identityProviders
   if idp.type == 'LDAP'
+] + [
+  idp
+  for idp in params.identityProviders
+  if idp.type != 'LDAP'
 ];
 
 local ldapSync =
