@@ -8,9 +8,10 @@ This reflects what is documented by `oc explain --api-version config.openshift.i
 The parameters `openshift4_authentication.templates.(err,login,providerSelection)` directly take the template string.
 The values will be written to a secret which then gets referenced in the OAuth CRD.
 
-As of know, the paramter `openshift4_authentication.identityProviders` can only handle provider configs of type LDAP.
+As of know, the paramter `openshift4_authentication.identityProviders` requires at least one provider config of type LDAP.
+Additional provider configs can be of other types.
 The documentation requires to configure the LDAP bind password as a secret, and the CA certificate as a config map, the component accepts their literal value.
-Secrets and config maps will be created and referenced as needed.
+Secrets and config maps will be created and referenced as needed only for LDAP provider configs.
 
 
 == LDAP Group Sync
