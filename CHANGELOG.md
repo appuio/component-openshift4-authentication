@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Initial implementation allowing to manage identity providers. 
+- Initial implementation allowing to manage identity providers.
 - Faciltiy to manage LDAP group sync.
 - Sudo process for cluster-admin ([#11])
 - LDAP group pruning ([#14])
@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - ClusterRoleBinding for the LDAP sync job ([#10])
+- Set `.spec.startingDeadlineSeconds` for group sync cronjob ([#19])
 
 [Unreleased]: https://github.com/appuio/component-openshift4-authentication/compare/ba4fee5..HEAD
 
@@ -30,3 +31,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#14]: https://github.com/appuio/component-openshift4-authentication/pull/14
 [#15]: https://github.com/appuio/component-openshift4-authentication/pull/15
 [#16]: https://github.com/appuio/component-openshift4-authentication/pull/16
+[#19]: https://github.com/appuio/component-openshift4-authentication/pull/16
