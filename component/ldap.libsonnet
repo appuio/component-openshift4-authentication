@@ -48,7 +48,7 @@ local syncConfig(namespace, idp, sa) =
             template+: {
               spec+: {
                 local container(command) = kube.Container(command) {
-                  image: std.join(':', std.prune([params.images.sync.image, params.images.sync.tag])),
+                  image: std.join(':', std.prune([ params.images.sync.image, params.images.sync.tag ])),
                   command: [
                     'oc',
                     'adm',
