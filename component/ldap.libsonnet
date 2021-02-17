@@ -41,6 +41,7 @@ local syncConfig(namespace, idp, sa) =
     local volume = 'sync-config';
     com.namespaced(namespace, kube.CronJob(name) {
       spec+: {
+        startingDeadlineSeconds: 30,
         schedule: if std.objectHas(idp.ldap.sync, 'schedule') then idp.ldap.sync.schedule else params.ldapSync.schedule % (n % 60),
         jobTemplate+: {
           spec+: {
