@@ -7,33 +7,33 @@ local inv = kap.inventory();
 local params = inv.parameters.openshift4_authentication;
 
 local sudoClusterRole = kube.ClusterRole('sudo-impersonator') {
-  rules: [{
-    apiGroups: [''],
-    resources: ['users'],
-    verbs: ['impersonate'],
-    resourceNames: [params.adminUserName],
+  rules: [ {
+    apiGroups: [ '' ],
+    resources: [ 'users' ],
+    verbs: [ 'impersonate' ],
+    resourceNames: [ params.adminUserName ],
   }, {
-    apiGroups: ['rbac.authorization.k8s.io'],
-    resources: ['clusterrolebindings', 'rolebindings'],
-    verbs: ['get', 'list', 'watch'],
-  }],
+    apiGroups: [ 'rbac.authorization.k8s.io' ],
+    resources: [ 'clusterrolebindings', 'rolebindings' ],
+    verbs: [ 'get', 'list', 'watch' ],
+  } ],
 };
 
 local sudoClusterRoleBinding = kube.ClusterRoleBinding(sudoClusterRole.metadata.name) {
-  subjects: [{
+  subjects: [ {
     apiGroup: 'rbac.authorization.k8s.io',
     kind: 'Group',
     name: params.sudoGroupName,
-  }],
+  } ],
   roleRef_: sudoClusterRole,
 };
 
 local sudoClusterRoleBindingView = kube.ClusterRoleBinding('sudo-view') {
-  subjects: [{
+  subjects: [ {
     apiGroup: 'rbac.authorization.k8s.io',
     kind: 'Group',
     name: params.sudoGroupName,
-  }],
+  } ],
   roleRef_: {
     kind: 'ClusterRole',
     metadata: {
@@ -43,11 +43,11 @@ local sudoClusterRoleBindingView = kube.ClusterRoleBinding('sudo-view') {
 };
 
 local clusterRoleBindingAdmin = kube.ClusterRoleBinding('impersonate-' + params.adminUserName) {
-  subjects: [{
+  subjects: [ {
     apiGroup: 'rbac.authorization.k8s.io',
     kind: 'User',
     name: params.adminUserName,
-  }],
+  } ],
   roleRef_: {
     kind: 'ClusterRole',
     metadata: {

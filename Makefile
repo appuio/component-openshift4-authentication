@@ -8,7 +8,7 @@ SHELL := bash
 FILES_JSONNET ?= $(shell find . -type f -name '*.*jsonnet' -or -name '*.libsonnet')
 FILES_YAML ?= $(shell find . -type f -name '*.yaml' -or -name '*.yml')
 
-JSONNETFMT_ARGS ?= --in-place
+JSONNETFMT_ARGS ?= --in-place --pad-arrays
 
 .PHONY: all
 all: lint
