@@ -4,7 +4,7 @@ parameters:
     sudoGroupName: sudoers
     # Username to be used for impersonation, aka sudo
     adminUserName: cluster-admin
-    identityProviders: []
+    identityProviders: {}
 
     templates:
       # `error` has a speacial meaning for jsonnet. Using `err` isntead.
