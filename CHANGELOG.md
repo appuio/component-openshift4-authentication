@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.0.0]
+
+### Changed
+
+- Change parameter `identityProviders` to be a dictionary ([#20])
+
 ## [v1.0.0]
 ### Changed
 
@@ -25,8 +31,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ClusterRoleBinding for the LDAP sync job ([#10])
 - Set `.spec.startingDeadlineSeconds` for group sync cronjob ([#19])
 
-[Unreleased]: https://github.com/appuio/component-openshift4-authentication/compare/v1.0.0..HEAD
+[Unreleased]: https://github.com/appuio/component-openshift4-authentication/compare/v2.0.0..HEAD
 [v1.0.0]: https://github.com/appuio/component-openshift4-authentication/releases/tag/v1.0.0
+[v2.0.0]: https://github.com/appuio/component-openshift4-authentication/releases/tag/v1.0.0
 
 [#9]: https://github.com/appuio/component-openshift4-authentication/pull/9
 [#10]: https://github.com/appuio/component-openshift4-authentication/pull/10
@@ -34,4 +41,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#14]: https://github.com/appuio/component-openshift4-authentication/pull/14
 [#15]: https://github.com/appuio/component-openshift4-authentication/pull/15
 [#16]: https://github.com/appuio/component-openshift4-authentication/pull/16
-[#19]: https://github.com/appuio/component-openshift4-authentication/pull/16
+[#19]: https://github.com/appuio/component-openshift4-authentication/pull/19
+[#20]: https://github.com/appuio/component-openshift4-authentication/pull/20

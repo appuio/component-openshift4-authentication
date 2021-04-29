@@ -26,7 +26,11 @@ local template = com.namespaced(params.namespace, kube.Secret('oauth-templates')
   },
 });
 
+local idps = params.identityProviders;
+
 local secrets = [
+  local idp = idps[idpname];
+
   com.namespaced(params.namespace, kube.Secret(authentication.RefName(idp.name)) {
     metadata+: {
       annotations+: {
@@ -38,11 +42,13 @@ local secrets = [
       bindPassword: idp.ldap.bindPassword,
     },
   })
-  for idp in params.identityProviders
-  if idp.type == 'LDAP'
+  for idpname in std.objectFields(idps)
+  if idps[idpname].type == 'LDAP'
 ];
 
 local configs = [
+  local idp = idps[idpname];
+
   com.namespaced(params.namespace, kube.ConfigMap(authentication.RefName(idp.name)) {
     metadata+: {
       annotations+: {
@@ -54,23 +60,25 @@ local configs = [
       'ca.crt': idp.ldap.ca,
     },
   })
-  for idp in params.identityProviders
-  if idp.type == 'LDAP'
+  for idpname in std.objectFields(idps)
+  if idps[idpname].type == 'LDAP'
 ];
 
 local identityProviders = [
+  local idp = idps[idpname];
+
   idp {
     ldap+: {
       ca: { name: authentication.RefName(idp.name) },
       bindPassword: { name: authentication.RefName(idp.name) },
     },
   }
-  for idp in params.identityProviders
-  if idp.type == 'LDAP'
+  for idpname in std.objectFields(idps)
+  if idps[idpname].type == 'LDAP'
 ] + [
-  idp
-  for idp in params.identityProviders
-  if idp.type != 'LDAP'
+  idps[idpname]
+  for idpname in std.objectFields(idps)
+  if idps[idpname].type != 'LDAP'
 ];
 
 local ldapSync =
@@ -88,9 +96,9 @@ local ldapSync =
       },
     },
   ] + std.flattenArrays([
-    ldap.syncConfig(params.namespace, idp, ldapSyncServiceAccount.metadata.name)
-    for idp in params.identityProviders
-    if idp.type == 'LDAP'
+    ldap.syncConfig(params.namespace, idps[idpname], ldapSyncServiceAccount.metadata.name)
+    for idpname in std.objectFields(idps)
+    if idps[idpname].type == 'LDAP'
   ]);
 
 local clusterOAuth = kube._Object('config.openshift.io/v1', 'OAuth', 'cluster') {
