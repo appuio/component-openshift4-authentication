@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [v1.0.0]
 ### Changed
 
 - Rename to `openshift4-authentication` ([#9])
@@ -23,7 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ClusterRoleBinding for the LDAP sync job ([#10])
 - Set `.spec.startingDeadlineSeconds` for group sync cronjob ([#19])
 
-[Unreleased]: https://github.com/appuio/component-openshift4-authentication/compare/ba4fee5..HEAD
+[Unreleased]: https://github.com/appuio/component-openshift4-authentication/compare/v1.0.0..HEAD
+[v1.0.0]: https://github.com/appuio/component-openshift4-authentication/releases/tag/v1.0.0
 
 [#9]: https://github.com/appuio/component-openshift4-authentication/pull/9
 [#10]: https://github.com/appuio/component-openshift4-authentication/pull/10
