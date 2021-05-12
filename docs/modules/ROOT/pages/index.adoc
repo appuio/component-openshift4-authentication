@@ -23,6 +23,11 @@ Secrets and config maps will be created and referenced as needed only for LDAP p
 The https://docs.openshift.com/container-platform/4.4/authentication/ldap-syncing.html[LDAP group sync] is configured to sync and prune groups from LDAP.
 Configured groups are synced from the LDAP provider and will be pruned once deleted again in LDAP.
 
+The sync cronjob is configured to be scheduled on the master nodes.
+The reason for this scheduling configuration stems from a combination of two factors: first, LDAP servers may be protected with IP allow-lists, and second, an OCP4 cluster may be deployed with public IPs for all nodes
+
+If both of those factors are combined, we need to add all the master node IPs to the allow-list, so that the control plane can talk to the LDAP server.
+In this scenario, if the LDAP sync cronjob is scheduled on the master nodes, we don't need to add additional infra or worker node IPs to the allow-list.
 
 == Cluster Admin Sudo
 
