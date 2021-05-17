@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Configure LDAP group sync cronjob to run on master nodes ([#22])
+
 ## [v2.0.0]
 
 ### Changed
@@ -43,3 +47,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#16]: https://github.com/appuio/component-openshift4-authentication/pull/16
 [#19]: https://github.com/appuio/component-openshift4-authentication/pull/19
 [#20]: https://github.com/appuio/component-openshift4-authentication/pull/20
+[#22]: https://github.com/appuio/component-openshift4-authentication/pull/22
