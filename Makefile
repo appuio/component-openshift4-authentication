@@ -25,7 +25,7 @@ VALE_ARGS ?= --minAlertLevel=error --config=/pages/ROOT/pages/.vale.ini /pages
 ANTORA_PREVIEW_CMD ?= $(DOCKER_CMD) run --rm --publish 2020:2020 --volume "${PWD}":/antora vshn/antora-preview:2.3.3 --style=syn --antora=docs
 
 .PHONY: all
-all: lint open
+all: lint
 
 .PHONY: lint
 lint: lint_jsonnet lint_yaml docs-vale
