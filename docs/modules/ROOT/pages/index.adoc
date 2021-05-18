@@ -3,7 +3,7 @@
 {doctitle} is a Commodore component for Managing the OpenShift 4 authentication config.
 The component allows to configure identity providers, templates to customize the look and feel of the login and the validity of the issued tokens.
 
-This reflects what is documented by `oc explain --api-version config.openshift.io/v1 OAuth` with some small tweaks to simplify the input.
+This reflects the documentation provided by `oc explain --api-version config.openshift.io/v1 OAuth` with some small tweaks to simplify the input.
 
 The parameters `openshift4_authentication.templates.(err,login,providerSelection)` directly take the template string.
 The values will be written to a secret which then gets referenced in the OAuth CRD.
@@ -11,7 +11,7 @@ The values will be written to a secret which then gets referenced in the OAuth C
 As of now, the parameter `openshift4_authentication.identityProviders` requires at least one provider config of type LDAP.
 The value of parameter `openshift4_authentication.identityProviders` must be a dictionary.
 However, the keys of the dictionary are only present to allow customizing the configuration of an identity provider later in the hierarchy.
-The keys themselves are not reflected anywhere in the generated configuration.
+The keys themselves aren't reflected anywhere in the generated configuration.
 Each value in the dictionary must be a valid identityProvider configuration for OpenShift 4.
 Additional provider configs can be of other types.
 The documentation requires to configure the LDAP bind password as a secret, and the CA certificate as a config map, the component accepts their literal value.
