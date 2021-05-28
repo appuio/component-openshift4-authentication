@@ -1,0 +1,8 @@
+_archive/
+_public/
+.cache/
+helmcharts/
+manifests/
+vendor/
+jsonnetfile*.json
+compiled/
