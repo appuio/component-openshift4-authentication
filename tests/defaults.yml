@@ -1,0 +1,14 @@
+parameters:
+  openshift4_authentication:
+    groupMemberships:
+      test-group:
+        users:
+          test-username: {}
+          absent-username:
+            state: absent
+      absent-group:
+        state: absent
+        users:
+          irrelevant-user: {}
+      empty-group:
+        users: {}
