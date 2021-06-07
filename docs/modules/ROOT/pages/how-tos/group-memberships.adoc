@@ -1,0 +1,59 @@
+= Manage group memberships
+
+This page covers a guide on how to add or remove RBAC users to/from groups.
+
+== Add user
+
+Add a user to a group as an empty object.
+
+TIP: The name of the user is a name of the RBAC user resource, which might not be the one the user is using to log in.
+
+IMPORTANT: The name of the group is subject to some naming rules, see https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#dns-label-names[DNS Label Names].
+
+[source,yaml]
+----
+parameters:
+  openshift4_authentication:
+    groupMemberships:
+      example-group:
+        users:
+          example-user: {}
+----
+
+[NOTE]
+====
+The `state` property can be specified explicitly, but is `present` already by default.
+[source,yaml]
+----
+          example-user:
+            state: present
+----
+====
+
+== Remove user
+
+If you have common groups "up" in the hierarchy, but want to remove a specific user from such a group, set the `state` property to `absent`.
+
+[source,yaml]
+----
+parameters:
+  openshift4_authentication:
+    groupMemberships:
+      example-group:
+        users:
+          removed-user:
+            state: absent
+----
+
+== Remove group
+
+If you have common groups "up" in the hierarchy, but want to avoid such a group being applied to the cluster, set the `state` property to `absent`.
+
+[source,yaml]
+----
+parameters:
+  openshift4_authentication:
+    groupMemberships:
+      removed-group:
+        state: absent
+----
