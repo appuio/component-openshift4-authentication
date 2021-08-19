@@ -1,0 +1,19 @@
+= Upgrade from 2.x to 3.x
+
+
+This guide describes the steps to perform an upgrade of the component from version 2.x to 3.x.
+
+== Step-by step guide
+
+Version 3.0 adds support to configure the OIDC secret using vault instead of manually deploying the secret on the cluster.
+
+To upgrade to the latest version follow these steps:
+
+. Extract the `clientSecret` from the `Secret` on the cluster.
+The secret is referenced in the following parameter: `openshift4_authentication.identityProviders.<name_of_the_provider>.openID.clientSecret.name`
+. Put the secret in vault. For example at this location: `${cluster:tenant}/${cluster:name}/oidc/clientSecret`
+. Change the `clientSecret` parameter as follows:
+[source]
+-          clientSecret:
+-            name: <name_of_the_secret>
++          clientSecret: '?{vaultkv:${cluster:tenant}/${cluster:name}/oidc/clientSecret}'
