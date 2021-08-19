@@ -44,6 +44,21 @@ local secrets = [
   })
   for idpname in std.objectFields(idps)
   if idps[idpname].type == 'LDAP'
+] + [
+  local idp = idps[idpname];
+  com.namespaced(params.namespace, kube.Secret(authentication.RefName(idp.name)) {
+    metadata+: {
+      annotations+: {
+        'argocd.argoproj.io/sync-options': 'Prune=false',
+        'argocd.argoproj.io/compare-options': 'IgnoreExtraneous',
+      },
+    },
+    stringData+: {
+      clientSecret: idp.openID.clientSecret,
+    },
+  })
+  for idpname in std.objectFields(idps)
+  if idps[idpname].type == 'OpenID'
 ];
 
 local configs = [
@@ -76,9 +91,18 @@ local identityProviders = [
   for idpname in std.objectFields(idps)
   if idps[idpname].type == 'LDAP'
 ] + [
+  local idp = idps[idpname];
+  idp {
+    openID+: {
+      clientSecret: { name: authentication.RefName(idp.name) },
+    },
+  }
+  for idpname in std.objectFields(idps)
+  if idps[idpname].type == 'OpenID'
+] + [
   idps[idpname]
   for idpname in std.objectFields(idps)
-  if idps[idpname].type != 'LDAP'
+  if idps[idpname].type != 'LDAP' && idps[idpname].type != 'OpenID'
 ];
 
 local ldapSync =
