@@ -5,7 +5,7 @@ This guide describes the steps to perform an upgrade of the component from versi
 
 == Step-by step guide
 
-Version 3.0 adds support to configure the OIDC secret using vault instead of manually deploying the secret on the cluster.
+Version 3.0 adds support to configure the OIDC secret using Vault instead of having to manually deploy the secret on the cluster.
 
 To upgrade to the latest version follow these steps:
 
