@@ -1,0 +1,7 @@
+:global:
+  componentName: openshift4-authentication
+  feature_goldenTests: true
+
+docs/antora.yml:
+  name: openshift4-authentication
+  title: OpenShift 4 Authentication
