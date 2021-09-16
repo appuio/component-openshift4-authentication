@@ -3,7 +3,7 @@ local ldap = import 'ldap.libsonnet';
 local com = import 'lib/commodore.libjsonnet';
 local kap = import 'lib/kapitan.libjsonnet';
 local kube = import 'lib/kube.libjsonnet';
-local authentication = import 'lib/openshift4-authentication.libjsonnet';
+local authentication = import 'common.libjsonnet';
 local rbac = import 'rbac.libsonnet';
 local inv = kap.inventory();
 // The hiera parameters for the component

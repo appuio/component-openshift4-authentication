@@ -1,7 +1,7 @@
 local com = import 'lib/commodore.libjsonnet';
 local kap = import 'lib/kapitan.libjsonnet';
 local kube = import 'lib/kube.libjsonnet';
-local authentication = import 'lib/openshift4-authentication.libjsonnet';
+local authentication = import 'common.libjsonnet';
 local inv = kap.inventory();
 
 local params = inv.parameters.openshift4_authentication;
