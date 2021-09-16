@@ -1,0 +1,8 @@
+apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata:
+  annotations: {}
+  labels:
+    name: cluster
+  name: cluster
+spec: {}
