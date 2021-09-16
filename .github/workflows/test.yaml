@@ -1,17 +1,51 @@
-name: Test
+name: Pull Request
 on:
   pull_request:
     branches:
       - master
 
+env:
+  COMPONENT_NAME: openshift4-authentication
+
 jobs:
-  compile:
+  linting:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         command:
-          - compile
+          - lint_jsonnet
+          - lint_yaml
+          - lint_adoc
     steps:
       - uses: actions/checkout@v2
-      - name: Run 'make ${{ matrix.command }}'
+      - name: Run ${{ matrix.command }}
         run: make ${{ matrix.command }}
+  editorconfig:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: snow-actions/eclint@v1.0.1
+        with:
+          args: 'check'
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.COMPONENT_NAME }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: ${{ env.COMPONENT_NAME }}
+      - name: Compile component
+        run: make test
+  golden:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.COMPONENT_NAME }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: ${{ env.COMPONENT_NAME }}
+      - name: Golden diff
+        run: make golden-diff

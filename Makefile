@@ -1,10 +1,15 @@
+#
+# File managed by ModuleSync - Do Not Edit
+#
+# Additional Makefiles can be added to `.sync.yml` in 'Makefile.includes'
+#
+
 MAKEFLAGS += --warn-undefined-variables
 SHELL := bash
 .SHELLFLAGS := -eu -o pipefail -c
 .DEFAULT_GOAL := all
 .DELETE_ON_ERROR:
 .SUFFIXES:
-.DEFAULT_TARGET: help
 
 include Makefile.vars.mk
 
@@ -16,15 +21,19 @@ help: ## Show this help
 all: lint
 
 .PHONY: lint
-lint: lint_jsonnet lint_yaml docs-vale ## All-in-one linting
+lint: lint_jsonnet lint_yaml lint_adoc ## All-in-one linting
 
 .PHONY: lint_jsonnet
 lint_jsonnet: $(JSONNET_FILES) ## Lint jsonnet files
 	$(JSONNET_DOCKER) $(JSONNETFMT_ARGS) --test -- $?
 
 .PHONY: lint_yaml
-lint_yaml: $(YAML_FILES) ## Lint yaml files
-	$(YAMLLINT_DOCKER) -f parsable -c $(YAMLLINT_CONFIG) $(YAMLLINT_ARGS) -- $?
+lint_yaml: ## Lint yaml files
+	$(YAMLLINT_DOCKER) -f parsable -c $(YAMLLINT_CONFIG) $(YAMLLINT_ARGS) -- .
+
+.PHONY: lint_adoc
+lint_adoc: ## Lint documentation
+	$(VALE_CMD) $(VALE_ARGS)
 
 .PHONY: format
 format: format_jsonnet ## All-in-one formatting
@@ -37,11 +46,27 @@ format_jsonnet: $(JSONNET_FILES) ## Format jsonnet files
 docs-serve: ## Preview the documentation
 	$(ANTORA_PREVIEW_CMD)
 
-.PHONY: docs-vale
-docs-vale: ## Lint the documentation
-	$(VALE_CMD) $(VALE_ARGS)
-
 .PHONY: compile
-compile: test_file = tests/defaults.yml
-compile: ## Compile the component locally with defaults
-	$(COMMODORE_CMD) -f $(test_file)
+.compile:
+	mkdir -p dependencies
+	$(COMMODORE_CMD)
+
+.PHONY: test
+test: commodore_args = -f tests/$(instance).yml --search-paths ./dependencies
+test: .compile ## Compile the component
+
+.PHONY: gen-golden
+gen-golden: commodore_args = -f tests/$(instance).yml --search-paths ./dependencies
+gen-golden: .compile ## Update the reference version for target `golden-diff`.
+	@rm -rf tests/golden/$(instance)
+	@mkdir -p tests/golden/$(instance)
+	@cp -R compiled/. tests/golden/$(instance)/.
+
+.PHONY: golden-diff
+golden-diff: commodore_args = -f tests/$(instance).yml --search-paths ./dependencies
+golden-diff: .compile ## Diff compile output against the reference version. Review output and run `make gen-golden golden-diff` if this target fails.
+	@git diff --exit-code --minimal --no-index -- tests/golden/$(instance) compiled/
+
+.PHONY: clean
+clean: ## Clean the project
+	rm -rf compiled dependencies vendor helmcharts jsonnetfile*.json || true
