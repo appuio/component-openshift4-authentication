@@ -1,9 +1,9 @@
 // main template for openshift4-authentication
+local common = import 'common.libjsonnet';
 local ldap = import 'ldap.libsonnet';
 local com = import 'lib/commodore.libjsonnet';
 local kap = import 'lib/kapitan.libjsonnet';
 local kube = import 'lib/kube.libjsonnet';
-local authentication = import 'common.libjsonnet';
 local rbac = import 'rbac.libsonnet';
 local inv = kap.inventory();
 // The hiera parameters for the component
@@ -28,43 +28,10 @@ local template = com.namespaced(params.namespace, kube.Secret('oauth-templates')
 
 local idps = params.identityProviders;
 
-local secrets = [
-  local idp = idps[idpname];
-
-  com.namespaced(params.namespace, kube.Secret(authentication.RefName(idp.name)) {
-    metadata+: {
-      annotations+: {
-        'argocd.argoproj.io/sync-options': 'Prune=false',
-        'argocd.argoproj.io/compare-options': 'IgnoreExtraneous',
-      },
-    },
-    stringData+: {
-      bindPassword: idp.ldap.bindPassword,
-    },
-  })
-  for idpname in std.objectFields(idps)
-  if idps[idpname].type == 'LDAP'
-] + [
-  local idp = idps[idpname];
-  com.namespaced(params.namespace, kube.Secret(authentication.RefName(idp.name)) {
-    metadata+: {
-      annotations+: {
-        'argocd.argoproj.io/sync-options': 'Prune=false',
-        'argocd.argoproj.io/compare-options': 'IgnoreExtraneous',
-      },
-    },
-    stringData+: {
-      clientSecret: idp.openID.clientSecret,
-    },
-  })
-  for idpname in std.objectFields(idps)
-  if idps[idpname].type == 'OpenID'
-];
-
 local configs = [
   local idp = idps[idpname];
 
-  com.namespaced(params.namespace, kube.ConfigMap(authentication.RefName(idp.name)) {
+  com.namespaced(params.namespace, kube.ConfigMap(common.RefName(idp.name)) {
     metadata+: {
       annotations+: {
         'argocd.argoproj.io/sync-options': 'Prune=false',
@@ -84,8 +51,10 @@ local identityProviders = [
 
   idp {
     ldap+: {
-      ca: { name: authentication.RefName(idp.name) },
-      bindPassword: { name: authentication.RefName(idp.name) },
+      ca: { name: common.RefName(idp.name) },
+      bindPassword: {
+        name: if std.objectHas(idp, 'bindPasswordSecretRef') then params.secrets[idp.bindPasswordSecretRef] else common.RefName(idp.name),
+      },
     },
   }
   for idpname in std.objectFields(idps)
@@ -94,7 +63,9 @@ local identityProviders = [
   local idp = idps[idpname];
   idp {
     openID+: {
-      clientSecret: { name: authentication.RefName(idp.name) },
+      clientSecret: {
+        name: params.secrets[idp.openID.clientSecretRef],
+      },
     },
   }
   for idpname in std.objectFields(idps)
@@ -144,7 +115,6 @@ local clusterOAuth = kube._Object('config.openshift.io/v1', 'OAuth', 'cluster') 
 // Define outputs below
 {
   [if hasTemplates then '01_template']: template,
-  [if std.length(secrets) > 0 then '02_secrets']: secrets,
   [if std.length(configs) > 0 then '03_configs']: configs,
   '10_oauth': clusterOAuth,
   [if std.length(ldapSync) > 2 then '20_ldap_sync']: ldapSync,

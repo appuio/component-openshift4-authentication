@@ -1,0 +1,132 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations: {}
+  labels:
+    name: ldap-sync
+  name: ldap-sync
+  namespace: openshift-config
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  annotations: {}
+  labels:
+    name: ldap-sync
+  name: ldap-sync
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: ldap-sync
+    namespace: openshift-config
+---
+apiVersion: v1
+data: {}
+kind: Secret
+metadata:
+  annotations: {}
+  labels:
+    name: ldap-sync-company-ldap
+  name: ldap-sync-company-ldap
+  namespace: openshift-config
+stringData:
+  blacklist.txt: ''
+  ca-bundle.crt: '-----BEGIN CERTIFICATE-----
+
+    -----END CERTIFICATE-----'
+  config.yaml: '"apiVersion": "v1"
+
+    "bindDN": "uid=service,ou=idp,dc=company,dc=tld"
+
+    "bindPassword": "t-silent-test-1234/c-green-test-1234/ldap-auth/bindPassword"
+
+    "ca": "/etc/sync-config/ca-bundle.crt"
+
+    "kind": "LDAPSyncConfig"
+
+    "url": "ldaps://ldap.company.tld:636/ou=services,dc=company,dc=tld?uid"'
+  whitelist.txt: ''
+type: Opaque
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  annotations: {}
+  labels:
+    name: ldap-sync-company-ldap
+  name: ldap-sync-company-ldap
+  namespace: openshift-config
+spec:
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 20
+  jobTemplate:
+    spec:
+      completions: 1
+      parallelism: 1
+      template:
+        metadata:
+          labels:
+            name: ldap-sync-company-ldap
+        spec:
+          containers:
+            - args: []
+              command:
+                - oc
+                - adm
+                - groups
+                - sync
+                - --sync-config=/etc/sync-config/config.yaml
+                - --confirm
+                - --blacklist=/etc/sync-config/blacklist.txt
+                - --whitelist=/etc/sync-config/whitelist.txt
+              env: []
+              image: image-registry.openshift-image-registry.svc:5000/openshift/cli
+              imagePullPolicy: IfNotPresent
+              name: sync
+              ports: []
+              stdin: false
+              tty: false
+              volumeMounts:
+                - mountPath: /etc/sync-config/
+                  name: sync-config
+            - args: []
+              command:
+                - oc
+                - adm
+                - groups
+                - prune
+                - --sync-config=/etc/sync-config/config.yaml
+                - --confirm
+                - --blacklist=/etc/sync-config/blacklist.txt
+                - --whitelist=/etc/sync-config/whitelist.txt
+              env: []
+              image: image-registry.openshift-image-registry.svc:5000/openshift/cli
+              imagePullPolicy: IfNotPresent
+              name: prune
+              ports: []
+              stdin: false
+              tty: false
+              volumeMounts:
+                - mountPath: /etc/sync-config/
+                  name: sync-config
+          imagePullSecrets: []
+          initContainers: []
+          nodeSelector:
+            node-role.kubernetes.io/master: ''
+          restartPolicy: OnFailure
+          serviceAccountName: ldap-sync
+          terminationGracePeriodSeconds: 30
+          tolerations:
+            - effect: NoSchedule
+              key: node-role.kubernetes.io/master
+              operator: Exists
+          volumes:
+            - name: sync-config
+              secret:
+                secretName: ldap-sync-company-ldap
+  schedule: 49 * * * *
+  startingDeadlineSeconds: 30
+  successfulJobsHistoryLimit: 10

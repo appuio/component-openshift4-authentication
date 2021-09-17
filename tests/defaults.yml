@@ -12,3 +12,35 @@ parameters:
           irrelevant-user: {}
       empty-group:
         users: {}
+
+    secrets:
+      oidc-client:
+        clientSecret: '?{vaultkv:${cluster:tenant}/${cluster:name}/keycloak-auth/clientSecret}'
+
+    identityProviders:
+      ldap-auth:
+        name: Company LDAP
+        type: LDAP
+        ldap:
+          url: "ldaps://ldap.company.tld:636/ou=services,dc=company,dc=tld?uid"
+          bindDN: "uid=service,ou=idp,dc=company,dc=tld"
+          ca: |-
+            -----BEGIN CERTIFICATE-----
+            -----END CERTIFICATE-----
+          sync: {}
+
+          # This password is legacy. Newer version should use `bindPasswordSecretRef` instead
+          bindPassword: "?{vaultkv:${customer:name}/${cluster:name}/ldap-auth/bindPassword}"
+
+      keycloak-auth:
+        name: keycloak-auth
+        type: OpenID
+        mappingMethod: add
+        openID:
+          claims:
+            email: ['email']
+            name: ['name']
+            preferredUsername: ['preferred_username']
+          clientID: company-client
+          clientSecretRef: oidc-client
+          issuer: https://sso.company.tld/auth/realms/master

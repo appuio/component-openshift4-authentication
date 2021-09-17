@@ -7,9 +7,7 @@ parameters:
         output_path: apps/
       - input_paths:
           - openshift4-authentication/component/main.jsonnet
-        input_type: jsonnet
-        output_path: openshift4-authentication/
-      - input_paths:
+          - openshift4-authentication/component/secrets.jsonnet
           - openshift4-authentication/component/groups.jsonnet
         input_type: jsonnet
         output_path: openshift4-authentication/
