@@ -11,18 +11,16 @@ local params = inv.parameters.openshift4_authentication;
 
 local idps = params.identityProviders;
 
-local argoAnnotations = {
-  'argocd.argoproj.io/sync-options': 'Prune=false',
-  'argocd.argoproj.io/compare-options': 'IgnoreExtraneous',
-};
-
 // To avoid breaking changes for LDAP, we support the identityProviders.<name>.ldap.bindPassword parameter
 local legacySecrets = [
   local idp = idps[idpname];
 
   com.namespaced(params.namespace, kube.Secret(common.RefName(idp.name)) {
     metadata+: {
-      annotations+: argoAnnotations,
+      annotations+: {
+        'argocd.argoproj.io/compare-options': 'IgnoreExtraneous',
+      },
+      labels+: common.commonLabels(),
     },
     stringData+: {
       bindPassword: idp.ldap.bindPassword,
@@ -35,7 +33,8 @@ local legacySecrets = [
 local secrets = [
   com.namespaced(params.namespace, kube.Secret(common.RefName(secretName)) {
     metadata+: {
-      annotations+: argoAnnotations,
+      annotations+: common.argoAnnotations(),
+      labels+: common.commonLabels(),
     },
     stringData: params.secrets[secretName],
   })

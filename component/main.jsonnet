@@ -33,10 +33,8 @@ local configs = [
 
   com.namespaced(params.namespace, kube.ConfigMap(common.RefName(idp.name)) {
     metadata+: {
-      annotations+: {
-        'argocd.argoproj.io/sync-options': 'Prune=false',
-        'argocd.argoproj.io/compare-options': 'IgnoreExtraneous',
-      },
+      annotations+: common.argoAnnotations(),
+      labels+: common.commonLabels(),
     },
     data: {
       'ca.crt': idp.ldap.ca,

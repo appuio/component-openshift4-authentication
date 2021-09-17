@@ -9,6 +9,9 @@ metadata:
     argocd.argoproj.io/compare-options: IgnoreExtraneous
     argocd.argoproj.io/sync-options: Prune=false
   labels:
+    app.kubernetes.io/component: openshift4-authentication
+    app.kubernetes.io/managed-by: commodore
+    app.kubernetes.io/name: openshift4-authentication
     name: company-ldap
   name: company-ldap
   namespace: openshift-config
