@@ -27,7 +27,7 @@ local legacySecrets = [
     },
   })
   for idpname in std.objectFields(idps)
-  if idps[idpname].type == 'LDAP'
+  if idps[idpname].type == 'LDAP' && !std.objectHas(idps[idpname].ldap, 'bindPasswordSecretRef')
 ];
 
 local secrets = [

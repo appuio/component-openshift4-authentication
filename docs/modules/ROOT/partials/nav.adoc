@@ -2,3 +2,4 @@
 * How-to guides
 ** xref:how-tos/ldap-sync.adoc[LDAP Sync]
 ** xref:how-tos/group-memberships.adoc[Manage group memberships]
+** xref:how-tos/upgrade-v2-to-v3.adoc[Upgrade from v2 to v3]
