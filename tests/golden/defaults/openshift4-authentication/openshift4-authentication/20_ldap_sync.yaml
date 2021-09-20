@@ -37,17 +37,17 @@ stringData:
   ca-bundle.crt: '-----BEGIN CERTIFICATE-----
 
     -----END CERTIFICATE-----'
-  config.yaml: '"apiVersion": "v1"
-
-    "bindDN": "uid=service,ou=idp,dc=company,dc=tld"
-
-    "bindPassword": "t-silent-test-1234/c-green-test-1234/ldap-auth/bindPassword"
-
-    "ca": "/etc/sync-config/ca-bundle.crt"
-
-    "kind": "LDAPSyncConfig"
-
-    "url": "ldaps://ldap.company.tld:636/ou=services,dc=company,dc=tld?uid"'
+  config.yaml: "\"apiVersion\": \"v1\"\n\"bindDN\": \"uid=service,ou=idp,dc=company,dc=tld\"\
+    \n\"bindPassword\": \"t-silent-test-1234/c-green-test-1234/ldap-auth/bindPassword\"\
+    \n\"ca\": \"/etc/sync-config/ca-bundle.crt\"\n\"kind\": \"LDAPSyncConfig\"\n\"\
+    rfc2307\":\n  \"groupMembershipAttributes\":\n  - \"uniqueMember\"\n  \"groupNameAttributes\"\
+    :\n  - \"cn\"\n  \"groupUIDAttribute\": \"dn\"\n  \"groupsQuery\":\n    \"baseDN\"\
+    : \"ou=Groups,dc=company,dc=tld\"\n    \"derefAliases\": \"never\"\n    \"filter\"\
+    : \"(&(objectclass=groupOfUniqueNames)(|(cn=cluster-admins)))\"\n    \"pageSize\"\
+    : 0\n    \"scope\": \"sub\"\n  \"tolerateMemberNotFoundErrors\": false\n  \"tolerateMemberOutOfScopeErrors\"\
+    : false\n  \"userNameAttributes\":\n  - \"uid\"\n  \"userUIDAttribute\": \"dn\"\
+    \n  \"usersQuery\":\n    \"baseDN\": \"dc=company,dc=tld\"\n    \"derefAliases\"\
+    : \"never\"\n    \"pageSize\": 0\n    \"scope\": \"sub\"\n\"url\": \"ldaps://ldap.company.tld:636/ou=services,dc=company,dc=tld?uid\""
   whitelist.txt: ''
 type: Opaque
 ---
