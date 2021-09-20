@@ -6,11 +6,11 @@
 
 This guide describes the steps to perform an upgrade of the component from version 2.x to 3.x.
 
-Version 3.0 changes how secrets are managed and configured for the LDAP IdP.
+Version 3.0 of the component removes the legacy syntax for configuring the bind password for LDAP identity providers.
 
 
 == Upgrade guide for LDAP provider
 
-With version 3.x, the parameter `openshift4_authentication.identityProviders.<name_of_the_provider>.ldap.bindPassword` as `string` was marked **deprecated** and has been removed with this release.
+Starting with version 2.3 of the component, providing a string value for the parameter `openshift4_authentication.identityProviders.<name_of_the_provider>.ldap.bindPassword` was marked **deprecated** and has been removed with this release.
 
 See xref:references/deprecation-notice.adoc[Deprecated features] how to upgrade.
