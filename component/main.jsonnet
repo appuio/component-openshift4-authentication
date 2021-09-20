@@ -50,28 +50,21 @@ local identityProviders = [
   idp {
     ldap+: {
       ca: { name: common.RefName(idp.name) },
-      bindPassword: {
-        name: if std.objectHas(idp, 'bindPasswordSecretRef') then params.secrets[idp.bindPasswordSecretRef] else common.RefName(idp.name),
-      },
+      bindPassword:
+        if std.isString(super.bindPassword) then
+          // Legacy variant: value of `bindPassword` is a string, so we inject the secret name for the generated legacy secret
+          { name: common.RefName(idp.name) }
+        else
+          // In other cases: Just reuse the original value for `bindPassword`, leave it to the user to correctly format it.
+          super.bindPassword,
     },
   }
   for idpname in std.objectFields(idps)
   if idps[idpname].type == 'LDAP'
 ] + [
-  local idp = idps[idpname];
-  idp {
-    openID+: {
-      clientSecret: {
-        name: params.secrets[idp.openID.clientSecretRef],
-      },
-    },
-  }
-  for idpname in std.objectFields(idps)
-  if idps[idpname].type == 'OpenID'
-] + [
   idps[idpname]
   for idpname in std.objectFields(idps)
-  if idps[idpname].type != 'LDAP' && idps[idpname].type != 'OpenID'
+  if idps[idpname].type != 'LDAP'
 ];
 
 local ldapSync =

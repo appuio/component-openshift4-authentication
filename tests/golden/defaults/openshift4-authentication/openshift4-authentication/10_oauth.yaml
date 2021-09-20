@@ -28,8 +28,6 @@ spec:
             - preferred_username
         clientID: company-client
         clientSecret:
-          name:
-            clientSecret: t-silent-test-1234/c-green-test-1234/keycloak-auth/clientSecret
-        clientSecretRef: oidc-client
+          name: oidc-client
         issuer: https://sso.company.tld/auth/realms/master
       type: OpenID

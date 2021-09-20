@@ -20,7 +20,11 @@ local syncConfig(namespace, idp, sa) =
     apiVersion: 'v1',
     url: idp.ldap.url,
     bindDN: idp.ldap.bindDN,
-    bindPassword: idp.ldap.bindPassword,
+    bindPassword:
+      if std.isString(idp.ldap.bindPassword) then
+        idp.ldap.bindPassword
+      else
+        params.secrets[idp.ldap.bindPassword.name].bindPassword,
     ca: mount + files.caBundle,
     [if std.objectHas(idp.ldap.sync, 'rfc2307') then 'rfc2307']: idp.ldap.sync.rfc2307,
     [if std.objectHas(idp.ldap.sync, 'activeDirectory') then 'activeDirectory']: idp.ldap.sync.activeDirectory,

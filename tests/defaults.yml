@@ -16,7 +16,7 @@ parameters:
     secrets:
       oidc-client:
         clientSecret: '?{vaultkv:${cluster:tenant}/${cluster:name}/keycloak-auth/clientSecret}'
-      # this is the secret name in case if `bindPasswordSecretRef` is used:
+      # this is the secret name in case if `bindPassword.name` is used:
       #ldap-bind:
       #  bindPassword: '?{vaultkv:${cluster:tenant}/${cluster:name}/ldap-auth/bindPassword}'
 
@@ -32,9 +32,10 @@ parameters:
             -----END CERTIFICATE-----
           sync: {}
 
-          # Deprecated: This password is legacy. Newer version should use `bindPasswordSecretRef` instead
+          # Deprecated: Using a string value is legacy. Newer version should use `bindPassword.name` and reference a secret name from `secrets` instead.
           bindPassword: "?{vaultkv:${customer:name}/${cluster:name}/ldap-auth/bindPassword}"
-          #bindPasswordSecretRef: ldap-bind
+          #bindPassword:
+          #  name: ldap-bind
 
       keycloak-auth:
         name: keycloak-auth
@@ -46,5 +47,6 @@ parameters:
             name: ['name']
             preferredUsername: ['preferred_username']
           clientID: company-client
-          clientSecretRef: oidc-client
+          clientSecret:
+            name: oidc-client
           issuer: https://sso.company.tld/auth/realms/master
