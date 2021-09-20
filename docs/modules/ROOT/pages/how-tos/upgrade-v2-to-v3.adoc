@@ -1,69 +1,16 @@
+// NOTE: this page is a preparation for the next major release by removing deprecated features.
+// It shall only be linked in the nav once a major release is pending.
+
 = Upgrade from v2 to v3
 
 
 This guide describes the steps to perform an upgrade of the component from version 2.x to 3.x.
 
-Version 3.0 changes how secrets are managed and configured.
-For OIDC providers this means support for configuring the secrets using Vault instead of having to manually deploy the secrets on the cluster.
+Version 3.0 changes how secrets are managed and configured for the LDAP IdP.
 
 
 == Upgrade guide for LDAP provider
 
-With version 3.x, the parameter `openshift4_authentication.identityProviders.<name_of_the_provider>.ldap.bindPassword` is **deprecated** and will be removed in a later release.
+With version 3.x, the parameter `openshift4_authentication.identityProviders.<name_of_the_provider>.ldap.bindPassword` as `string` was marked **deprecated** and has been removed with this release.
 
-If you already want to switch to the new secrets syntax, setup the parameters as following:
-
-[source,diff]
-----
-parameters:
-  openshift4_authentication:
-    identityProviders:
-      <name_of_the_provider>:
-        type: LDAP
-        ldap:
--         bindPassword: "?{vaultkv:${customer:name}/${cluster:name}/ldap-auth/bindPassword}"
-+         bindPasswordSecretRef: ldap-bind <1>
-+   secrets:
-+     ldap-bind: <1>
-+       bindPassword: '?{vaultkv:${cluster:tenant}/${cluster:name}/ldap-auth/bindPassword}'
-----
-<1> Those names have to match
-
-TIP: The old parameter `bindPassword` still works, but `bindPasswordSecretRef` takes precedence if present.
-
-== Upgrade guide for OIDC provider
-
-If you've used an OIDC provider (for example Keycloak) then you have to upgrade the parameters to the new syntax.
-
-. Extract the `clientSecret` from the `Secret` on the cluster.
-+
-[source,bash]
-----
-clientSecret="your-client-secret-name" <1>
-oc --as cluster-admin -n openshift-config get secret "$clientSecret" -o jsonpath='{.data.clientSecret}' | base64 -d; echo
-----
-<1> The secret is referenced in the following parameter: `openshift4_authentication.identityProviders.<name_of_the_provider>.openID.clientSecret.name`
-
-. Put the secret in Vault.
-  For example at this location: `${cluster:tenant}/${cluster:name}/oidc/<name_of_the_provider>/clientSecret`
-
-. Replace the `openshift4_authentication.identityProviders.<name_of_the_provider>.openID.clientSecret` parameter:
-+
-[source,diff]
-----
-parameters:
-  openshift4_authentication:
-    identityProviders:
-      keycloak-auth:
-        type: OpenID
-        openID:
-          clientID: company-client
--         clientSecret:
--           name: <name_of_the_secret>
-+         clientSecretRef: oidc-client <1>
-+   secrets:
-+     oidc-client: <1>
-+       clientSecret: '?{vaultkv:${cluster:tenant}/${cluster:name}/oidc/keycloak-auth/clientSecret}' <2>
-----
-<1> Those names have to match
-<2> Use the Vault location selected in the previous step here.
+See xref:references/deprecation-notice.adoc[Deprecated features] how to upgrade.
