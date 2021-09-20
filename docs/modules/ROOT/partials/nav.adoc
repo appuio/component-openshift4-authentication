@@ -5,3 +5,5 @@
 ** xref:how-tos/configure-oidc-provider.adoc[Configure OIDC provider]
 ** xref:how-tos/group-memberships.adoc[Manage group memberships]
 
+* References
+** xref:references/deprecation-notice.adoc[Deprecated features]

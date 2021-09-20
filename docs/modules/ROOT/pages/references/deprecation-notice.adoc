@@ -1,0 +1,23 @@
+= Deprecated features
+
+== v2.3.0
+
+The type of `openshift4_authentication.identityProviders.*.ldap.bindPassword` being a `string` reference to Vault is **deprecated** since the introduction of xref:how-tos/configure-secrets.adoc[Secret references].
+Users are encouraged to adopt the configuration like following, as the legacy syntax will be removed in a future release.
+
+[source,diff]
+----
+parameters:
+  openshift4_authentication:
+    identityProviders:
+      <name_of_the_provider>:
+        type: LDAP
+        ldap:
+-         bindPassword: "?{vaultkv:${customer:name}/${cluster:name}/ldap-auth/bindPassword}"
++         bindPassword:
++           name: ldap-bind <1>
++   secrets:
++     ldap-bind: <1>
++       bindPassword: '?{vaultkv:${cluster:tenant}/${cluster:name}/ldap-auth/bindPassword}'
+----
+<1> Those names have to match
