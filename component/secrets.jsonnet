@@ -15,24 +15,22 @@ local legacySecrets = [
 
   com.namespaced(params.namespace, kube.Secret(common.RefName(idp.name)) {
     metadata+: {
-      annotations+: {
-        'argocd.argoproj.io/compare-options': 'IgnoreExtraneous',
-      },
-      labels+: common.commonLabels(),
+      annotations+: common.argoAnnotations,
+      labels+: common.commonLabels,
     },
     stringData+: {
       bindPassword: idp.ldap.bindPassword,
     },
   })
   for idpname in std.objectFields(idps)
-  if idps[idpname].type == 'LDAP' && !std.objectHas(idps[idpname].ldap, 'bindPasswordSecretRef')
+  if idps[idpname].type == 'LDAP' && std.isString(idps[idpname].ldap.bindPassword)
 ];
 
 local secrets = [
   com.namespaced(params.namespace, kube.Secret(common.RefName(secretName)) {
     metadata+: {
-      annotations+: common.argoAnnotations(),
-      labels+: common.commonLabels(),
+      annotations+: common.argoAnnotations,
+      labels+: common.commonLabels,
     },
     stringData: params.secrets[secretName],
   })
