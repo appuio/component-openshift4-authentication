@@ -1,0 +1,27 @@
+= Deprecated features
+
+== v2.3.0
+
+Directly providing a Vault secret reference as a string in `openshift4_authentication.identityProviders.*.ldap.bindPassword` is **deprecated**.
+Users should switch to the secret references mechanism, as documented in xref:how-tos/configure-secrets.adoc[configuring secrets for identity providers] how-to, as the legacy syntax will be removed in a future release.
+
+See below for an example diff showing how to restructure an LDAP identity provider configuration from the legacy syntax to secret references.
+
+[source,diff]
+----
+parameters:
+  openshift4_authentication:
+    identityProviders:
+      <name_of_the_provider>:
+        type: LDAP
+        ldap:
+-         bindPassword: "?{vaultkv:${customer:name}/${cluster:name}/ldap-auth/bindPassword}"
++         bindPassword:
++           name: ldap-bind <1>
++   secrets:
++     ldap-bind: <1>
++       bindPassword: '?{vaultkv:${cluster:tenant}/${cluster:name}/ldap-auth/bindPassword}' <2>
+----
+<1> Name of the secret containing the LDAP bind password.
+The name needs to be identical in both locations.
+<2> The bind password **must** be stored in key `bindPassword` in the secret.
