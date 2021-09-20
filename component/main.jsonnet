@@ -1,9 +1,9 @@
 // main template for openshift4-authentication
+local common = import 'common.libjsonnet';
 local ldap = import 'ldap.libsonnet';
 local com = import 'lib/commodore.libjsonnet';
 local kap = import 'lib/kapitan.libjsonnet';
 local kube = import 'lib/kube.libjsonnet';
-local authentication = import 'lib/openshift4-authentication.libjsonnet';
 local rbac = import 'rbac.libsonnet';
 local inv = kap.inventory();
 // The hiera parameters for the component
@@ -28,33 +28,13 @@ local template = com.namespaced(params.namespace, kube.Secret('oauth-templates')
 
 local idps = params.identityProviders;
 
-local secrets = [
-  local idp = idps[idpname];
-
-  com.namespaced(params.namespace, kube.Secret(authentication.RefName(idp.name)) {
-    metadata+: {
-      annotations+: {
-        'argocd.argoproj.io/sync-options': 'Prune=false',
-        'argocd.argoproj.io/compare-options': 'IgnoreExtraneous',
-      },
-    },
-    stringData+: {
-      bindPassword: idp.ldap.bindPassword,
-    },
-  })
-  for idpname in std.objectFields(idps)
-  if idps[idpname].type == 'LDAP'
-];
-
 local configs = [
   local idp = idps[idpname];
 
-  com.namespaced(params.namespace, kube.ConfigMap(authentication.RefName(idp.name)) {
+  com.namespaced(params.namespace, kube.ConfigMap(common.RefName(idp.name)) {
     metadata+: {
-      annotations+: {
-        'argocd.argoproj.io/sync-options': 'Prune=false',
-        'argocd.argoproj.io/compare-options': 'IgnoreExtraneous',
-      },
+      annotations+: common.argoAnnotations,
+      labels+: common.commonLabels,
     },
     data: {
       'ca.crt': idp.ldap.ca,
@@ -69,8 +49,14 @@ local identityProviders = [
 
   idp {
     ldap+: {
-      ca: { name: authentication.RefName(idp.name) },
-      bindPassword: { name: authentication.RefName(idp.name) },
+      ca: { name: common.RefName(idp.name) },
+      bindPassword:
+        if std.isString(super.bindPassword) then
+          // Legacy variant: value of `bindPassword` is a string, so we inject the secret name for the generated legacy secret
+          { name: common.RefName(idp.name) }
+        else
+          // In other cases: Just reuse the original value for `bindPassword`, leave it to the user to correctly format it.
+          super.bindPassword,
     },
   }
   for idpname in std.objectFields(idps)
@@ -120,7 +106,6 @@ local clusterOAuth = kube._Object('config.openshift.io/v1', 'OAuth', 'cluster') 
 // Define outputs below
 {
   [if hasTemplates then '01_template']: template,
-  [if std.length(secrets) > 0 then '02_secrets']: secrets,
   [if std.length(configs) > 0 then '03_configs']: configs,
   '10_oauth': clusterOAuth,
   [if std.length(ldapSync) > 2 then '20_ldap_sync']: ldapSync,

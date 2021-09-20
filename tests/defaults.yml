@@ -12,3 +12,60 @@ parameters:
           irrelevant-user: {}
       empty-group:
         users: {}
+
+    secrets:
+      oidc-client:
+        clientSecret: '?{vaultkv:${cluster:tenant}/${cluster:name}/keycloak-auth/clientSecret}'
+      # this is the secret name in case if `bindPassword.name` is used:
+      #ldap-bind:
+      #  bindPassword: '?{vaultkv:${cluster:tenant}/${cluster:name}/ldap-auth/bindPassword}'
+
+    identityProviders:
+      ldap-auth:
+        name: Company LDAP
+        type: LDAP
+        ldap:
+          url: "ldaps://ldap.company.tld:636/ou=services,dc=company,dc=tld?uid"
+          bindDN: "uid=service,ou=idp,dc=company,dc=tld"
+          ca: |-
+            -----BEGIN CERTIFICATE-----
+            -----END CERTIFICATE-----
+          sync:
+            rfc2307:
+              groupsQuery:
+                baseDN: ou=Groups,dc=company,dc=tld
+                scope: sub
+                derefAliases: never
+                filter: "(&(objectclass=groupOfUniqueNames)(|(cn=cluster-admins)))"
+                pageSize: 0
+              groupUIDAttribute: dn
+              groupNameAttributes: [cn]
+              groupMembershipAttributes: [uniqueMember]
+              usersQuery:
+                baseDN: dc=company,dc=tld
+                scope: sub
+                derefAliases: never
+                pageSize: 0
+              userUIDAttribute: dn
+              userNameAttributes: [uid]
+              tolerateMemberNotFoundErrors: false
+              tolerateMemberOutOfScopeErrors: false
+
+          # Deprecated: Using a string value is legacy. Newer version should use `bindPassword.name` and reference a secret name from `secrets` instead.
+          bindPassword: "?{vaultkv:${customer:name}/${cluster:name}/ldap-auth/bindPassword}"
+          #bindPassword:
+          #  name: ldap-bind
+
+      keycloak-auth:
+        name: keycloak-auth
+        type: OpenID
+        mappingMethod: add
+        openID:
+          claims:
+            email: ['email']
+            name: ['name']
+            preferredUsername: ['preferred_username']
+          clientID: company-client
+          clientSecret:
+            name: oidc-client
+          issuer: https://sso.company.tld/auth/realms/master

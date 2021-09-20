@@ -1,0 +1,40 @@
+= Configure OIDC provider
+
+This guide shows how to configure an OIDC provider (for example Keycloak).
+
+== Step by step guide
+
+. Configure a new client in the OIDC provider (with client credentials)
+. Put the client secret in Vault.
+  For example at this location: `${cluster:tenant}/${cluster:name}/oidc/<name_of_the_provider>/clientSecret`
+
+. Configure this component like the following example:
++
+[source,yaml]
+----
+parameters:
+  openshift4_authentication:
+    identityProviders:
+      keycloak-auth:
+        name: my-keycloak
+        type: OpenID
+        mappingMethod: add
+        openID:
+          issuer: https://keycloak.company.tld/auth/realms/company-realm
+          clientID: ${cluster:name}
+          clientSecret:
+            name: company-keycloak <1>
+          claims:
+            preferredUsername:
+              - preferred_username
+            name:
+              - name
+            email:
+              - email
+
+    secrets:
+      company-keycloak: <1>
+        clientSecret: '?{vaultkv:${cluster:tenant}/${cluster:name}/oidc/keycloak-auth/clientSecret}' <2>
+----
+<1> The name of the secret.
+<2> For OpenID connect, the client secret **must** be stored in a key named `clientSecret` in the secret.

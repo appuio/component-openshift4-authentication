@@ -1,0 +1,17 @@
+/**
+ * \file Library with public methods provided by component openshift4-authentication.
+ */
+
+// Export library functions here
+{
+  RefName(name): std.strReplace(std.asciiLower(name), ' ', '-'),
+  argoAnnotations: {
+    'argocd.argoproj.io/sync-options': 'Prune=false',
+    'argocd.argoproj.io/compare-options': 'IgnoreExtraneous',
+  },
+  commonLabels: {
+    'app.kubernetes.io/name': 'openshift4-authentication',
+    'app.kubernetes.io/component': 'openshift4-authentication',
+    'app.kubernetes.io/managed-by': 'commodore',
+  },
+}

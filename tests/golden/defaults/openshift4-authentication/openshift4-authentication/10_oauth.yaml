@@ -5,4 +5,29 @@ metadata:
   labels:
     name: cluster
   name: cluster
-spec: {}
+spec:
+  identityProviders:
+    - ldap:
+        bindDN: uid=service,ou=idp,dc=company,dc=tld
+        bindPassword:
+          name: company-ldap
+        ca:
+          name: company-ldap
+        url: ldaps://ldap.company.tld:636/ou=services,dc=company,dc=tld?uid
+      name: Company LDAP
+      type: LDAP
+    - mappingMethod: add
+      name: keycloak-auth
+      openID:
+        claims:
+          email:
+            - email
+          name:
+            - name
+          preferredUsername:
+            - preferred_username
+        clientID: company-client
+        clientSecret:
+          name: oidc-client
+        issuer: https://sso.company.tld/auth/realms/master
+      type: OpenID
