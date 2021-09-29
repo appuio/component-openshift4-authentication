@@ -52,18 +52,18 @@ docs-serve: ## Preview the documentation
 	$(COMMODORE_CMD)
 
 .PHONY: test
-test: commodore_args = -f tests/$(instance).yml --search-paths ./dependencies
+test: commodore_args += -f tests/$(instance).yml
 test: .compile ## Compile the component
 
 .PHONY: gen-golden
-gen-golden: commodore_args = -f tests/$(instance).yml --search-paths ./dependencies
+gen-golden: commodore_args += -f tests/$(instance).yml
 gen-golden: .compile ## Update the reference version for target `golden-diff`.
 	@rm -rf tests/golden/$(instance)
 	@mkdir -p tests/golden/$(instance)
 	@cp -R compiled/. tests/golden/$(instance)/.
 
 .PHONY: golden-diff
-golden-diff: commodore_args = -f tests/$(instance).yml --search-paths ./dependencies
+golden-diff: commodore_args += -f tests/$(instance).yml
 golden-diff: .compile ## Diff compile output against the reference version. Review output and run `make gen-golden golden-diff` if this target fails.
 	@git diff --exit-code --minimal --no-index -- tests/golden/$(instance) compiled/
 
