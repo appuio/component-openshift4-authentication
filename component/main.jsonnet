@@ -26,7 +26,7 @@ local template = com.namespaced(params.namespace, kube.Secret('oauth-templates')
   },
 });
 
-local idps = params.identityProviders;
+local idps = std.prune(params.identityProviders);
 
 local configs = [
   local idp = idps[idpname];
