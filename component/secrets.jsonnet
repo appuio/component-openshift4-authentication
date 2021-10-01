@@ -34,7 +34,7 @@ local secrets = [
     },
     stringData: params.secrets[secretName],
   })
-  for secretName in std.objectFields(params.secrets)
+  for secretName in std.objectFields(std.prune(params.secrets))
 ] + legacySecrets;
 
 
