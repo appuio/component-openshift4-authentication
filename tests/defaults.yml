@@ -21,6 +21,7 @@ parameters:
       #  bindPassword: '?{vaultkv:${cluster:tenant}/${cluster:name}/ldap-auth/bindPassword}'
 
     identityProviders:
+      deletedProvider: null
       ldap-auth:
         name: Company LDAP
         type: LDAP

@@ -7,7 +7,7 @@ local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.openshift4_authentication;
 
-local idps = params.identityProviders;
+local idps = std.prune(params.identityProviders);
 
 // To avoid breaking changes for LDAP, we support the identityProviders.<name>.ldap.bindPassword parameter
 local legacySecrets = [
