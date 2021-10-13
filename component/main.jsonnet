@@ -2,6 +2,7 @@
 local common = import 'common.libjsonnet';
 local ldap = import 'ldap.libsonnet';
 local com = import 'lib/commodore.libjsonnet';
+local espejo = import 'lib/espejo.libsonnet';
 local kap = import 'lib/kapitan.libjsonnet';
 local kube = import 'lib/kube.libjsonnet';
 local rbac = import 'rbac.libsonnet';
@@ -102,6 +103,26 @@ local clusterOAuth = kube._Object('config.openshift.io/v1', 'OAuth', 'cluster') 
   },
 };
 
+local removeKubeAdmin = espejo.syncConfig('remove-kube-admin') {
+  metadata+: {
+    annotations+: {
+      // Remove kubeadmin secret after oauth providers have been configured
+      'argocd.argoproj.io/sync-wave': '10',
+    }
+  }
+  spec: {
+    namespaceSelector: {
+      matchNames: [ 'kube-system' ],
+    },
+    deleteItems: [
+      {
+        apiVersion: 'v1',
+        kind: 'Secret',
+        name: 'kubeadmin',
+      },
+    ],
+  },
+};
 
 // Define outputs below
 {
@@ -110,4 +131,5 @@ local clusterOAuth = kube._Object('config.openshift.io/v1', 'OAuth', 'cluster') 
   '10_oauth': clusterOAuth,
   [if std.length(ldapSync) > 2 then '20_ldap_sync']: ldapSync,
   '30_rbac': rbac,
+  '40_remove_kubeadmin_syncconfig': removeKubeAdmin,
 }
