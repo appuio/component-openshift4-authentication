@@ -5,6 +5,8 @@ metadata:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
     argocd.argoproj.io/sync-wave: '10'
   labels:
+    app.kubernetes.io/component: openshift4-authentication
+    app.kubernetes.io/managed-by: commodore
     name: remove-kube-admin
   name: remove-kube-admin
   namespace: syn-espejo
