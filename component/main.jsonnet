@@ -108,8 +108,8 @@ local removeKubeAdmin = espejo.syncConfig('remove-kube-admin') {
     annotations+: {
       // Remove kubeadmin secret after oauth providers have been configured
       'argocd.argoproj.io/sync-wave': '10',
-    }
-  }
+    },
+  },
   spec: {
     namespaceSelector: {
       matchNames: [ 'kube-system' ],
