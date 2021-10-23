@@ -4,6 +4,7 @@
 ** xref:how-tos/configure-secrets.adoc[Configure secrets]
 ** xref:how-tos/configure-oidc-provider.adoc[Configure OIDC provider]
 ** xref:how-tos/group-memberships.adoc[Manage group memberships]
+** xref:how-tos/upgrade-v2-to-v3.adoc[Upgrade from v2 to v3]
 
 * References
 ** xref:references/deprecation-notice.adoc[Deprecated features]
