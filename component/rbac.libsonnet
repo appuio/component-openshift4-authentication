@@ -56,10 +56,29 @@ local clusterRoleBindingAdmin = kube.ClusterRoleBinding('impersonate-' + params.
   },
 };
 
+local sudoAlertmanagerAccess =
+  kube.RoleBinding('alertmanager-access-' + kube.hyphenate(params.sudoGroupName)) {
+    metadata+: {
+      namespace: 'openshift-monitoring',
+    },
+    subjects: [ {
+      apiGroup: 'rbac.authorization.k8s.io',
+      kind: 'Group',
+      name: params.sudoGroupName,
+    } ],
+    roleRef_: {
+      kind: 'Role',
+      metadata: {
+        name: 'monitoring-alertmanager-edit',
+      },
+    },
+  };
+
 
 [
   sudoClusterRole,
   sudoClusterRoleBinding,
   sudoClusterRoleBindingView,
   clusterRoleBindingAdmin,
+  sudoAlertmanagerAccess,
 ]
