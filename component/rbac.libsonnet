@@ -37,7 +37,7 @@ local sudoClusterRoleBindingView = kube.ClusterRoleBinding('sudo-view') {
   roleRef_: {
     kind: 'ClusterRole',
     metadata: {
-      name: 'view',
+      name: 'cluster-reader',
     },
   },
 };

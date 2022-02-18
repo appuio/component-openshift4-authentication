@@ -33,12 +33,12 @@ In this scenario, if the LDAP sync cronjob is scheduled on the master nodes, we 
 
 RBAC rules are set up in order to allow a sudo like method to gain cluster-admin privileges.
 
-By default only `view` and `impersonate` permissions are granted to the group defined in `openshift4_authentication.sudoGroupName`.
+By default only `cluster-read` and `impersonate` permissions are granted to the group defined in `openshift4_authentication.sudoGroupName`.
 Using https://kubernetes.io/docs/reference/access-authn-authz/authentication/#user-impersonation[user impersonation], permissions can be escalated to full `cluster-admin`:
 
 [source,console]
 ----
-oc --as cluster-admin get nodes
+oc --as cluster-admin get secret
 ----
 
 The component also deploys a `RoleBinding` to ensure that users in the sudoers group can access the OpenShift cluster monitoring Alertmanager.
