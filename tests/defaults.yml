@@ -64,7 +64,7 @@ parameters:
               tolerateMemberOutOfScopeErrors: false
 
           # Deprecated: Using a string value is legacy. Newer version should use `bindPassword.name` and reference a secret name from `secrets` instead.
-          bindPassword: "?{vaultkv:${customer:name}/${cluster:name}/ldap-auth/bindPassword}"
+          bindPassword: "?{vaultkv:${cluster:tenant}/${cluster:name}/ldap-auth/bindPassword}"
           #bindPassword:
           #  name: ldap-bind
 

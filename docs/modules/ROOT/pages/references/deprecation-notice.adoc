@@ -15,7 +15,7 @@ parameters:
       <name_of_the_provider>:
         type: LDAP
         ldap:
--         bindPassword: "?{vaultkv:${customer:name}/${cluster:name}/ldap-auth/bindPassword}"
+-         bindPassword: "?{vaultkv:${cluster:tenant}/${cluster:name}/ldap-auth/bindPassword}"
 +         bindPassword:
 +           name: ldap-bind <1>
 +   secrets:
