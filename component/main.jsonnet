@@ -42,7 +42,7 @@ local configs = [
     },
   })
   for idpname in std.objectFields(idps)
-  if idps[idpname].type == 'LDAP'
+  if idps[idpname].type == 'LDAP' && std.objectHas(idps[idpname].ldap, 'ca')
 ];
 
 local identityProviders = [
@@ -50,7 +50,7 @@ local identityProviders = [
 
   idp {
     ldap+: {
-      ca: { name: common.RefName(idp.name) },
+      [if std.objectHas(idp.ldap, 'ca') then 'ca']: { name: common.RefName(idp.name) },
       bindPassword:
         if std.isString(super.bindPassword) then
           // Legacy variant: value of `bindPassword` is a string, so we inject the secret name for the generated legacy secret
