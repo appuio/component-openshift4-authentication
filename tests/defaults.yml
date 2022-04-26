@@ -30,6 +30,8 @@ parameters:
       # this is the secret name in case if `bindPassword.name` is used:
       #ldap-bind:
       #  bindPassword: '?{vaultkv:${cluster:tenant}/${cluster:name}/ldap-auth/bindPassword}'
+      ldap2-bind:
+        bindPassword: ?{vaultkv:${cluster:tenant}/${cluster:name}/ldap2-auth/bindPassword}"
 
     identityProviders:
       deletedProvider: null
@@ -67,6 +69,35 @@ parameters:
           bindPassword: "?{vaultkv:${cluster:tenant}/${cluster:name}/ldap-auth/bindPassword}"
           #bindPassword:
           #  name: ldap-bind
+
+      ldap2:
+        name: Other LDAP
+        type: LDAP
+        ldap:
+          url: "ldaps://ldap.company.tld:636/ou=services,dc=company,dc=tld?uid"
+          bindDN: "uid=service,ou=idp,dc=company,dc=tld"
+          sync:
+            rfc2307:
+              groupsQuery:
+                baseDN: ou=Groups,dc=company,dc=tld
+                scope: sub
+                derefAliases: never
+                filter: "(&(objectclass=groupOfUniqueNames)(|(cn=cluster-admins)))"
+                pageSize: 0
+              groupUIDAttribute: dn
+              groupNameAttributes: [cn]
+              groupMembershipAttributes: [uniqueMember]
+              usersQuery:
+                baseDN: dc=company,dc=tld
+                scope: sub
+                derefAliases: never
+                pageSize: 0
+              userUIDAttribute: dn
+              userNameAttributes: [uid]
+              tolerateMemberNotFoundErrors: false
+              tolerateMemberOutOfScopeErrors: false
+          bindPassword:
+            name: ldap2-bind
 
       keycloak-auth:
         name: keycloak-auth

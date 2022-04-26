@@ -8,14 +8,19 @@ This reflects the documentation provided by `oc explain --api-version config.ope
 The parameters `openshift4_authentication.templates.(err,login,providerSelection)` directly take the template string.
 The values will be written to a secret which then gets referenced in the OAuth CRD.
 
-As of now, the parameter `openshift4_authentication.identityProviders` requires at least one provider config of type LDAP.
 The value of parameter `openshift4_authentication.identityProviders` must be a dictionary.
-However, the keys of the dictionary are only present to allow customizing the configuration of an identity provider later in the hierarchy.
+The keys of the dictionary are only present to allow customizing the configuration of an identity provider later in the hierarchy.
 The keys themselves aren't reflected anywhere in the generated configuration.
+
 Each value in the dictionary must be a valid identityProvider configuration for OpenShift 4.
-Additional provider configs can be of other types.
-The documentation requires to configure the LDAP bind password as a secret, and the CA certificate as a config map, the component accepts their literal value.
-Secrets and config maps will be created and referenced as needed only for LDAP provider configs.
+The component supports any type of provider config which is supported by Openshift 4.
+
+When configuring an LDAP identity provider which is secured with a certificate issued by a CA which is part of the system CA bundle, the LDAP server CA doesn't need to be specified explicitly.
+Otherwise, the CA can be provided as a literal string in field `ca` of the LDAP identity provider config.
+
+NOTE: Currently, the component only supports configuring a custom CA certificate for LDAP identity providers.
+
+Users should use the component's xref:how-tos/configure-secrets.adoc[secret configuration mechanism] to deploy secrets contiaining identity provider credentials.
 
 
 == LDAP Group Sync

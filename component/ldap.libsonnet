@@ -8,7 +8,9 @@ local params = inv.parameters.openshift4_authentication;
 
 local syncConfig(namespace, idp, sa) =
   local name = 'ldap-sync-' + common.RefName(idp.name);
-  local mount = '/etc/sync-config/';
+  local ca_name = '%s-ca' % name;
+  local config_mount = '/etc/sync-config/';
+  local ca_mount = '/etc/sync-config-ca/';
   local files = {
     caBundle: 'ca-bundle.crt',
     config: 'config.yaml',
@@ -25,24 +27,39 @@ local syncConfig(namespace, idp, sa) =
         idp.ldap.bindPassword
       else
         params.secrets[idp.ldap.bindPassword.name].bindPassword,
-    ca: mount + files.caBundle,
+    ca: ca_mount + files.caBundle,
     [if std.objectHas(idp.ldap.sync, 'rfc2307') then 'rfc2307']: idp.ldap.sync.rfc2307,
     [if std.objectHas(idp.ldap.sync, 'activeDirectory') then 'activeDirectory']: idp.ldap.sync.activeDirectory,
     [if std.objectHas(idp.ldap.sync, 'augmentedActiveDirectory') then 'augmentedActiveDirectory']: idp.ldap.sync.augmentedActiveDirectory,
   };
 
   [
+    com.namespaced(namespace, kube.ConfigMap(ca_name) {
+      metadata+: {
+        annotations+: common.argoAnnotations,
+        labels+: common.commonLabels {
+          // OpenShift creates a key called 'ca-bundle.crt' with the system
+          // trusted CAs when this label is set on the configmap. We ensure to
+          // only set this label if the user hasn't provided a custom CA for
+          // the LDAP IdP config.
+          [if !std.objectHas(idp.ldap, 'ca') then 'config.openshift.io/inject-trusted-cabundle']: 'true',
+        },
+      },
+      data: {
+        [if std.objectHas(idp.ldap, 'ca') then files.caBundle]: idp.ldap.ca,
+      },
+    }),
     com.namespaced(namespace, kube.Secret(name) {
       stringData: {
         [files.blacklist]: if std.objectHas(idp.ldap.sync, 'blacklist') then idp.ldap.sync.blacklist else '',
-        [files.caBundle]: idp.ldap.ca,
         [files.config]: std.manifestYamlDoc(syncCfg),
         [files.whitelist]: if std.objectHas(idp.ldap.sync, 'whitelist') then idp.ldap.sync.whitelist else '',
       },
     }),
 
     local n = std.foldl(function(x, y) x + y, std.encodeUTF8(std.md5(inv.parameters.cluster.name)), 0);
-    local volume = 'sync-config';
+    local config_volume = 'sync-config';
+    local ca_volume = 'ldap-ca';
     com.namespaced(namespace, kube.CronJob(name) {
       spec+: {
         startingDeadlineSeconds: 30,
@@ -58,13 +75,14 @@ local syncConfig(namespace, idp, sa) =
                     'adm',
                     'groups',
                     command,
-                    '--sync-config=' + mount + files.config,
+                    '--sync-config=' + config_mount + files.config,
                     '--confirm',
-                    '--blacklist=' + mount + files.blacklist,
-                    '--whitelist=' + mount + files.whitelist,
+                    '--blacklist=' + config_mount + files.blacklist,
+                    '--whitelist=' + config_mount + files.whitelist,
                   ],
                   volumeMounts_+: {
-                    [volume]: { mountPath: mount },
+                    [config_volume]: { mountPath: config_mount },
+                    [ca_volume]: { mountPath: ca_mount },
                   },
                 },
                 containers: [
@@ -73,7 +91,8 @@ local syncConfig(namespace, idp, sa) =
                 ],
                 serviceAccountName: sa,
                 volumes_+: {
-                  [volume]: { secret: { secretName: name } },
+                  [config_volume]: { secret: { secretName: name } },
+                  [ca_volume]: { configMap: { name: ca_name } },
                 },
                 nodeSelector: {
                   'node-role.kubernetes.io/master': '',
