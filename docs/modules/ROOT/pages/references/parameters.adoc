@@ -36,7 +36,7 @@ type:: dict
 default:: `{}`
 
 This key allows users to configure arbitrary OpenShift identity providers.
-Please see the [upstream documentation] for supported configurations.
+Please see the https://docs.openshift.com/container-platform/latest/authentication/understanding-identity-provider.html#supported-identity-providers[upstream documentation] for supported configurations.
 
 The component processes the contents of the dict into a list of `identityProvider` entries for the OpenShift 4 `OAuth` object.
 The dict keys are only present to allow users to modify existing entries in the hierarchy.
