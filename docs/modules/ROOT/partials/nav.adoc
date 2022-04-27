@@ -6,4 +6,5 @@
 ** xref:how-tos/group-memberships.adoc[Manage group memberships]
 
 * References
+** xref:references/parameters.adoc[Parameters]
 ** xref:references/deprecation-notice.adoc[Deprecated features]

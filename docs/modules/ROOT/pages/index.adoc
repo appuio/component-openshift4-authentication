@@ -20,7 +20,7 @@ Otherwise, the CA can be provided as a literal string in field `ca` of the LDAP 
 
 NOTE: Currently, the component only supports configuring a custom CA certificate for LDAP identity providers.
 
-Users should use the component's xref:how-tos/configure-secrets.adoc[secret configuration mechanism] to deploy secrets contiaining identity provider credentials.
+Users should use the component's xref:how-tos/configure-secrets.adoc[secret configuration mechanism] to deploy secrets containing identity provider credentials.
 
 
 == LDAP Group Sync
