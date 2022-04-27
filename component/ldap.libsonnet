@@ -45,10 +45,19 @@ local syncConfig(namespace, idp, sa) =
           [if !std.objectHas(idp.ldap, 'ca') then 'config.openshift.io/inject-trusted-cabundle']: 'true',
         },
       },
-      data: {
-        [if std.objectHas(idp.ldap, 'ca') then files.caBundle]: idp.ldap.ca,
-      },
-    }),
+    } + (
+      if std.objectHas(idp.ldap, 'ca') then {
+        data: {
+          [files.caBundle]: idp.ldap.ca,
+        },
+      } else {
+        // Hide key `data` to omit it when populating the ConfigMap with the
+        // OpenShift system CA bundle. Otherwise ArgoCD will repeatedly delete
+        // the CA bundle which is inserted by OpenShift and the App won't
+        // sync.
+        data:: {},
+      }
+    )),
     com.namespaced(namespace, kube.Secret(name) {
       stringData: {
         [files.blacklist]: if std.objectHas(idp.ldap.sync, 'blacklist') then idp.ldap.sync.blacklist else '',
