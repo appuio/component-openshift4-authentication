@@ -1,0 +1,139 @@
+= Parameters
+
+The parent key for all of the following parameters is `openshift4_authentication`.
+
+== `namespace`
+
+[horizontal]
+type:: string
+default:: `openshift-config`
+
+The namespace in which to create manifests.
+
+IMPORTANT: The component may not work correctly if this parameter is changed.
+
+== `sudoGroupName`
+
+[horizontal]
+type:: string
+default:: `sudoers`
+
+The OpenShift group name for which the component configures RBAC to allow members to impersonate the cluster administrator.
+See xref:index.adoc#_cluster_admin_sudo[Cluster Admin Sudo] for more details.
+
+== `adminUserName`
+
+[horizontal]
+type:: string
+default:: `cluster-admin`
+
+The username used for cluster administrator impersonation.
+
+== `identityProviders`
+
+[horizontal]
+type:: dict
+default:: `{}`
+
+This key allows users to configure arbitrary OpenShift identity providers.
+Please see the [upstream documentation] for supported configurations.
+
+The component processes the contents of the dict into a list of `identityProvider` entries for the OpenShift 4 `OAuth` object.
+The dict keys are only present to allow users to modify existing entries in the hierarchy.
+They don't appear in the generated manifests.
+
+NOTE: The component doesn't validate the provided configurations.
+
+NOTE: Currently, the component only supports configuring a custom CA certificate for LDAP identity providers.
+
+[TIP]
+====
+The component accepts custom CA certificate bundles for LDAP providers in key `ca` of an LDAP identity provider config.
+If a CA certificate bundle is provided like that, the component will generate a ConfigMap containing the CA certificate bundle, and will update the identity provider config to reference that ConfigMap.
+====
+
+
+Users should use the component's xref:how-tos/configure-secrets.adoc[secret configuration mechanism] to deploy secrets containing identity provider credentials.
+
+== `templates`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+err: ''
+login: ''
+providerSelection: ''
+----
+
+This parameter allows users to configure templates for the OpenShift authentication error, login, and provider selection pages.
+The component expects keys `err`, `login` and `providerSelection` in this parameter.
+The contents of those keys are used verbatim as the corresponding templates.
+
+If any templates are configured, the component will create a single Secret called `oauth-templates`.
+The component writes each configured template to the secret in the keys documented in the upstream documentation on https://docs.openshift.com/container-platform/latest/web_console/customizing-the-web-console.html#customizing-the-login-page_customizing-web-console[customizing the login page].
+
+NOTE: We use key `err` instead of `error` because `error` is a keyword in Jsonnet.
+
+
+== `token`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+timeoutSeconds: ~
+maxAgeSeconds: ~
+----
+
+This parameter allows users to customize the OAuth access token expiration.
+
+Key `timeoutSeconds` can be set to configure the desired value for the token's inactivity timeout.
+See the upstream documentation on https://docs.openshift.com/container-platform/4.9/authentication/configuring-internal-oauth.html#oauth-token-inactivity-timeout_configuring-internal-oauth[configuring token inactivity timeout for the internal OAuth server] for more details.
+
+Key `maxAgeSeconds` can be set to configure the desired value for the token's maximum life time.
+See the upstream documentation on https://docs.openshift.com/container-platform/latest/authentication/configuring-internal-oauth.html#oauth-configuring-internal-oauth_configuring-internal-oauth[configuring the internal OAuth server's token duration] for more details.
+
+
+== `ldapSync`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+schedule: '%d * * * *'
+----
+
+This parameter allows configuring the LDAP sync CronJob schedule.
+The schedule defined here will be applied for LDAP identity providers which don't configure their own custom schedule.
+
+The component will apply the logic documented in the Project Syn Jsonnet best practices on https://syn.tools/syn/explanations/jsonnet.html#_randomize_cron_schedules[randomizing cron schedules] to avoid generating load spikes on an LDAP server.
+
+NOTE: The component may break if you specify a schedule which doesn't contain exactly one `%d` format specifier.
+
+== `secrets`
+
+[horizontal]
+type:: dict
+default:: `{}`
+
+This parameter allows users to configure arbitrary secrets.
+The contents of the parameter are transformed into `Secret` resources.
+
+See the how-to on xref:how-tos/configure-secrets.adoc[configuring secrets] for more details.
+
+== `groupMemberships`
+
+[horizontal]
+type:: dict
+default:: `{}`
+
+This parameter allows users to configure arbitrary OpenShift groups and group memberships.
+
+See the how-to on xref:how-tos/group-memberships.adoc[managing group memberships] for more details.
