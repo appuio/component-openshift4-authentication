@@ -154,7 +154,6 @@ spec:
   successfulJobsHistoryLimit: 10
 ---
 apiVersion: v1
-data: {}
 kind: ConfigMap
 metadata:
   annotations:
