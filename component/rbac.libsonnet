@@ -85,7 +85,7 @@ local sudoMonitoringRulesView =
       std.asciiLower(params.sudoGroupName), ' ', '-'
     )
   );
-  kube.ClusterRoleBinding('monitoring-rules-view' + sanitizedGroupName) {
+  kube.ClusterRoleBinding('monitoring-rules-view-' + sanitizedGroupName) {
     subjects: [ {
       apiGroup: 'rbac.authorization.k8s.io',
       kind: 'Group',
