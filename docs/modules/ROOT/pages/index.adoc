@@ -46,7 +46,7 @@ Using https://kubernetes.io/docs/reference/access-authn-authz/authentication/#us
 oc --as cluster-admin get secret
 ----
 
-The component also deploys a `RoleBinding` to ensure that users in the sudoers group can access the OpenShift cluster monitoring Alertmanager.
+The component also deploys a `RoleBinding` and a `ClusterRoleBinding` to ensure that users in the sudoers group can access the OpenShift cluster monitoring Alertmanager and its associated resources in the OpenShift console.
 
 See https://kb.vshn.ch/oc4/how-tos/authentication/sudo.html[how-to] and https://kb.vshn.ch/oc4/explanations/sudo.html[explanation] for further details.
 
