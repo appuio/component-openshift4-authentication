@@ -79,6 +79,25 @@ local sudoAlertmanagerAccess =
     },
   };
 
+local sudoMonitoringRulesView =
+  local sanitizedGroupName = kube.hyphenate(
+    std.strReplace(
+      std.asciiLower(params.sudoGroupName), ' ', '-'
+    )
+  );
+  kube.ClusterRoleBinding('monitoring-rules-view' + sanitizedGroupName) {
+    subjects: [ {
+      apiGroup: 'rbac.authorization.k8s.io',
+      kind: 'Group',
+      name: params.sudoGroupName,
+    } ],
+    roleRef_: {
+      kind: 'ClusterRole',
+      metadata: {
+        name: 'monitoring-rules-view',
+      },
+    },
+  };
 
 [
   sudoClusterRole,
@@ -86,4 +105,5 @@ local sudoAlertmanagerAccess =
   sudoClusterRoleBindingView,
   clusterRoleBindingAdmin,
   sudoAlertmanagerAccess,
+  sudoMonitoringRulesView,
 ]
