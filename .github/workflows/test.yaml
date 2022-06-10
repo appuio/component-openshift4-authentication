@@ -5,7 +5,7 @@ on:
       - master
 
 env:
-  COMPONENT_NAME: openshift4-authentication
+  COMPONENT_NAME: OpenShift 4 Authentication
 
 jobs:
   linting:
