@@ -10,7 +10,6 @@ parameters:
 
   openshift4_authentication:
     sudoGroups:
-      - ~sudoers
       - Customer sudoers
       - Team sudoers
     groupMemberships:

@@ -3,8 +3,7 @@ parameters:
     namespace: openshift-config
     # Deprecated: add name to 'sudoGroups' instead.
     sudoGroupName: null
-    sudoGroups:
-      - sudoers
+    sudoGroups: []
 
     # Username to be used for impersonation, aka sudo
     adminUserName: cluster-admin

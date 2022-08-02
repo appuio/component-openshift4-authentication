@@ -32,7 +32,7 @@ Use `sudoGroups` instead.
 
 [horizontal]
 type:: list
-default:: `["sudoers"]`
+default:: `[]`
 
 The OpenShift group names for which the component configures RBAC to allow members to impersonate the cluster administrator.
 See xref:index.adoc#_cluster_admin_sudo[Cluster Admin Sudo] for more details.
