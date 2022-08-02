@@ -1,7 +1,10 @@
 parameters:
   openshift4_authentication:
     namespace: openshift-config
-    sudoGroupName: sudoers
+    # Deprecated: add name to 'sudoGroups' instead.
+    sudoGroupName: null
+    sudoGroups: []
+
     # Username to be used for impersonation, aka sudo
     adminUserName: cluster-admin
     identityProviders: {}

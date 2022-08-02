@@ -9,7 +9,9 @@ parameters:
     namespace: syn-espejo
 
   openshift4_authentication:
-    sudoGroupName: sudoers Group
+    sudoGroups:
+      - Customer sudoers
+      - Team sudoers
     groupMemberships:
       test-group:
         users:
