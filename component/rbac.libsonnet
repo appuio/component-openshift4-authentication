@@ -7,18 +7,18 @@ local inv = kap.inventory();
 local params = inv.parameters.openshift4_authentication;
 
 local sudoGroups =
-  if params.sudoGroupName != null && params.sudoGroupName != '' then
-    [
+  local legacyGroup =
+    if params.sudoGroupName != null && params.sudoGroupName != '' then
       std.trace(
         (
           '\nParameter `sudoGroupName` is deprecated.\n' +
           'Please update your config to use `sudoGroups` instead.'
         ),
-        params.sudoGroupName
-      ),
-    ]
-  else
-    com.renderArray(params.sudoGroups);
+        [ params.sudoGroupName ]
+      )
+    else
+      [];
+  com.renderArray(legacyGroup + params.sudoGroups);
 
 local sudoGroupSubjects = std.map(
   function(g) {
