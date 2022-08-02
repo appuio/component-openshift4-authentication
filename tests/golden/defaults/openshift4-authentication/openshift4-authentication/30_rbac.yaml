@@ -38,7 +38,10 @@ roleRef:
 subjects:
   - apiGroup: rbac.authorization.k8s.io
     kind: Group
-    name: sudoers Group
+    name: Customer sudoers
+  - apiGroup: rbac.authorization.k8s.io
+    kind: Group
+    name: Team sudoers
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -54,7 +57,10 @@ roleRef:
 subjects:
   - apiGroup: rbac.authorization.k8s.io
     kind: Group
-    name: sudoers Group
+    name: Customer sudoers
+  - apiGroup: rbac.authorization.k8s.io
+    kind: Group
+    name: Team sudoers
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -77,8 +83,8 @@ kind: RoleBinding
 metadata:
   annotations: {}
   labels:
-    name: alertmanager-access-sudoers-group
-  name: alertmanager-access-sudoers-group
+    name: alertmanager-access-sudoer-groups
+  name: alertmanager-access-sudoer-groups
   namespace: openshift-monitoring
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -87,15 +93,18 @@ roleRef:
 subjects:
   - apiGroup: rbac.authorization.k8s.io
     kind: Group
-    name: sudoers Group
+    name: Customer sudoers
+  - apiGroup: rbac.authorization.k8s.io
+    kind: Group
+    name: Team sudoers
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   annotations: {}
   labels:
-    name: monitoring-rules-view-sudoers-group
-  name: monitoring-rules-view-sudoers-group
+    name: monitoring-rules-view-sudoer-groups
+  name: monitoring-rules-view-sudoer-groups
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -103,4 +112,7 @@ roleRef:
 subjects:
   - apiGroup: rbac.authorization.k8s.io
     kind: Group
-    name: sudoers Group
+    name: Customer sudoers
+  - apiGroup: rbac.authorization.k8s.io
+    kind: Group
+    name: Team sudoers

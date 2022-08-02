@@ -16,10 +16,40 @@ IMPORTANT: The component may not work correctly if this parameter is changed.
 
 [horizontal]
 type:: string
-default:: `sudoers`
+default:: `null`
 
 The OpenShift group name for which the component configures RBAC to allow members to impersonate the cluster administrator.
 See xref:index.adoc#_cluster_admin_sudo[Cluster Admin Sudo] for more details.
+
+[WARNING]
+====
+This parameter is deprecated and will be removed in a future release.
+Use `sudoGroups` instead.
+
+To keep compatibility with existing installations, this parameter overrides `sudoGroups` if set.
+====
+
+
+== `sudoGroups`
+
+[horizontal]
+type:: list
+default:: `["sudoers"]`
+
+The OpenShift group names for which the component configures RBAC to allow members to impersonate the cluster administrator.
+See xref:index.adoc#_cluster_admin_sudo[Cluster Admin Sudo] for more details.
+
+Groups can be removed from the hierarchy by prefixing them with a `~` character.
+
+=== Example
+
+[source,yaml]
+----
+sudoGroups:
+- ~sudoers
+- admins
+----
+
 
 == `adminUserName`
 

@@ -6,6 +6,28 @@ local inv = kap.inventory();
 
 local params = inv.parameters.openshift4_authentication;
 
+local sudoGroups =
+  if params.sudoGroupName != null && params.sudoGroupName != '' then
+    [
+      std.trace(
+        (
+          '\nParameter `sudoGroupName` is deprecated.\n' +
+          'Please update your config to use `sudoGroups` instead.'
+        ),
+        params.sudoGroupName
+      ),
+    ]
+  else
+    com.renderArray(params.sudoGroups);
+
+local sudoGroupSubjects = std.map(
+  function(g) {
+    apiGroup: 'rbac.authorization.k8s.io',
+    kind: 'Group',
+    name: g,
+  }, sudoGroups
+);
+
 local sudoClusterRole = kube.ClusterRole('sudo-impersonator') {
   rules: [ {
     apiGroups: [ '' ],
@@ -20,20 +42,12 @@ local sudoClusterRole = kube.ClusterRole('sudo-impersonator') {
 };
 
 local sudoClusterRoleBinding = kube.ClusterRoleBinding(sudoClusterRole.metadata.name) {
-  subjects: [ {
-    apiGroup: 'rbac.authorization.k8s.io',
-    kind: 'Group',
-    name: params.sudoGroupName,
-  } ],
+  subjects: sudoGroupSubjects,
   roleRef_: sudoClusterRole,
 };
 
 local sudoClusterRoleBindingView = kube.ClusterRoleBinding('sudo-view') {
-  subjects: [ {
-    apiGroup: 'rbac.authorization.k8s.io',
-    kind: 'Group',
-    name: params.sudoGroupName,
-  } ],
+  subjects: sudoGroupSubjects,
   roleRef_: {
     kind: 'ClusterRole',
     metadata: {
@@ -57,20 +71,11 @@ local clusterRoleBindingAdmin = kube.ClusterRoleBinding('impersonate-' + params.
 };
 
 local sudoAlertmanagerAccess =
-  local sanitizedGroupName = kube.hyphenate(
-    std.strReplace(
-      std.asciiLower(params.sudoGroupName), ' ', '-'
-    )
-  );
-  kube.RoleBinding('alertmanager-access-' + sanitizedGroupName) {
+  kube.RoleBinding('alertmanager-access-sudoer-groups') {
     metadata+: {
       namespace: 'openshift-monitoring',
     },
-    subjects: [ {
-      apiGroup: 'rbac.authorization.k8s.io',
-      kind: 'Group',
-      name: params.sudoGroupName,
-    } ],
+    subjects: sudoGroupSubjects,
     roleRef_: {
       kind: 'Role',
       metadata: {
@@ -80,17 +85,8 @@ local sudoAlertmanagerAccess =
   };
 
 local sudoMonitoringRulesView =
-  local sanitizedGroupName = kube.hyphenate(
-    std.strReplace(
-      std.asciiLower(params.sudoGroupName), ' ', '-'
-    )
-  );
-  kube.ClusterRoleBinding('monitoring-rules-view-' + sanitizedGroupName) {
-    subjects: [ {
-      apiGroup: 'rbac.authorization.k8s.io',
-      kind: 'Group',
-      name: params.sudoGroupName,
-    } ],
+  kube.ClusterRoleBinding('monitoring-rules-view-sudoer-groups') {
+    subjects: sudoGroupSubjects,
     roleRef_: {
       kind: 'ClusterRole',
       metadata: {
