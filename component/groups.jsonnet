@@ -10,7 +10,12 @@ local params = inv.parameters.openshift4_authentication;
 local groups = std.prune([
   local group = params.groupMemberships[groupName];
 
-  if com.getValueOrDefault(group, 'state', 'present') == 'present' && std.length(group.users) > 0 then kube.Group(groupName) {
+  if com.getValueOrDefault(group, 'state', 'present') == 'present' && std.length(group.users) > 0 then {
+    apiVersion: 'user.openshift.io/v1',
+    kind: 'Group',
+    metadata: {
+      name: groupName,
+    },
     subjects: std.prune([
       if com.getValueOrDefault(group.users[userName], 'state', 'present') == 'present' then {
         apiGroup: 'rbac.authorization.k8s.io',

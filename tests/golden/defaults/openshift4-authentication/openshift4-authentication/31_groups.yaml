@@ -1,6 +1,7 @@
-apiGroup: rbac.authorization.k8s.io
+apiVersion: user.openshift.io/v1
 kind: Group
-name: test-group
+metadata:
+  name: test-group
 subjects:
   - apiGroup: rbac.authorization.k8s.io
     kind: User
