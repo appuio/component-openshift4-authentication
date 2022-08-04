@@ -16,12 +16,8 @@ local groups = std.prune([
     metadata: {
       name: groupName,
     },
-    subjects: std.prune([
-      if com.getValueOrDefault(group.users[userName], 'state', 'present') == 'present' then {
-        apiGroup: 'rbac.authorization.k8s.io',
-        kind: 'User',
-        name: userName,
-      }
+    users: std.prune([
+      if com.getValueOrDefault(group.users[userName], 'state', 'present') == 'present' then userName
       for userName in std.objectFields(group.users)
     ]),
   }
