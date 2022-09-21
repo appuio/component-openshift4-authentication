@@ -117,6 +117,15 @@ spec:
               imagePullPolicy: IfNotPresent
               name: sync
               ports: []
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - ALL
+                runAsNonRoot: true
+                runAsUser: 1000
+                seccompProfile:
+                  type: RuntimeDefault
               stdin: false
               tty: false
               volumeMounts:
@@ -139,6 +148,15 @@ spec:
               imagePullPolicy: IfNotPresent
               name: prune
               ports: []
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - ALL
+                runAsNonRoot: true
+                runAsUser: 1000
+                seccompProfile:
+                  type: RuntimeDefault
               stdin: false
               tty: false
               volumeMounts:
@@ -244,6 +262,15 @@ spec:
               imagePullPolicy: IfNotPresent
               name: sync
               ports: []
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - ALL
+                runAsNonRoot: true
+                runAsUser: 1000
+                seccompProfile:
+                  type: RuntimeDefault
               stdin: false
               tty: false
               volumeMounts:
@@ -266,6 +293,15 @@ spec:
               imagePullPolicy: IfNotPresent
               name: prune
               ports: []
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - ALL
+                runAsNonRoot: true
+                runAsUser: 1000
+                seccompProfile:
+                  type: RuntimeDefault
               stdin: false
               tty: false
               volumeMounts:
