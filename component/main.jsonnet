@@ -70,17 +70,22 @@ local identityProviders = [
 
 local ldapSync =
   local ldapSyncServiceAccount = com.namespaced(params.namespace, kube.ServiceAccount('ldap-sync'));
+  local ldapSyncRole = kube.ClusterRole('syn-ldap-sync') {
+    rules: [
+      {
+        apiGroups: [ 'user.openshift.io' ],
+        resources: [ 'groups' ],
+        verbs: [ '*' ],
+      },
+    ],
+  };
 
   [
     ldapSyncServiceAccount,
-    kube.ClusterRoleBinding('ldap-sync') {
+    ldapSyncRole,
+    kube.ClusterRoleBinding('syn-ldap-sync') {
       subjects_: [ ldapSyncServiceAccount ],
-      roleRef_: {
-        kind: 'ClusterRole',
-        metadata: {
-          name: 'cluster-admin',
-        },
-      },
+      roleRef_: ldapSyncRole,
     },
   ] + std.flattenArrays([
     ldap.syncConfig(params.namespace, idps[idpname], ldapSyncServiceAccount.metadata.name)

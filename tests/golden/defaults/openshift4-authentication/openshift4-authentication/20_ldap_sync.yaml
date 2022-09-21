@@ -8,16 +8,31 @@ metadata:
   namespace: openshift-config
 ---
 apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  annotations: {}
+  labels:
+    name: syn-ldap-sync
+  name: syn-ldap-sync
+rules:
+  - apiGroups:
+      - user.openshift.io
+    resources:
+      - groups
+    verbs:
+      - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   annotations: {}
   labels:
-    name: ldap-sync
-  name: ldap-sync
+    name: syn-ldap-sync
+  name: syn-ldap-sync
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: cluster-admin
+  name: syn-ldap-sync
 subjects:
   - kind: ServiceAccount
     name: ldap-sync
