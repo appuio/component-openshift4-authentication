@@ -69,6 +69,17 @@ local syncConfig(namespace, idp, sa) =
     local n = std.foldl(function(x, y) x + y, std.encodeUTF8(std.md5(inv.parameters.cluster.name)), 0);
     local config_volume = 'sync-config';
     local ca_volume = 'ldap-ca';
+    local security_context = {
+      allowPrivilegeEscalation: false,
+      capabilities: {
+        drop: [ 'ALL' ],
+      },
+      runAsNonRoot: true,
+      runAsUser: 1000,
+      seccompProfile: {
+        type: 'RuntimeDefault',
+      },
+    };
     com.namespaced(namespace, kube.CronJob(name) {
       spec+: {
         startingDeadlineSeconds: 30,
@@ -79,6 +90,7 @@ local syncConfig(namespace, idp, sa) =
               spec+: {
                 local container(command) = kube.Container(command) {
                   image: std.join(':', std.prune([ params.images.sync.image, params.images.sync.tag ])),
+                  securityContext: security_context,
                   command: [
                     'oc',
                     'adm',
