@@ -80,18 +80,21 @@ local ldapSync =
     ],
   };
 
-  [
-    ldapSyncServiceAccount,
-    ldapSyncRole,
-    kube.ClusterRoleBinding('syn-ldap-sync') {
-      subjects_: [ ldapSyncServiceAccount ],
-      roleRef_: ldapSyncRole,
-    },
-  ] + std.flattenArrays([
+  local ldapIDPs = std.flattenArrays([
     ldap.syncConfig(params.namespace, idps[idpname], ldapSyncServiceAccount.metadata.name)
     for idpname in std.objectFields(idps)
     if idps[idpname].type == 'LDAP'
   ]);
+  if std.length(ldapIDPs) > 0 then
+    [
+      ldapSyncServiceAccount,
+      ldapSyncRole,
+      kube.ClusterRoleBinding('syn-ldap-sync') {
+        subjects_: [ ldapSyncServiceAccount ],
+        roleRef_: ldapSyncRole,
+      },
+    ] + ldapIDPs
+  else [];
 
 local clusterOAuth = kube._Object('config.openshift.io/v1', 'OAuth', 'cluster') {
   spec: {
@@ -138,7 +141,7 @@ local removeKubeAdmin = espejo.syncConfig('remove-kube-admin') {
   [if hasTemplates then '01_template']: template,
   [if std.length(configs) > 0 then '03_configs']: configs,
   '10_oauth': clusterOAuth,
-  [if std.length(ldapSync) > 2 then '20_ldap_sync']: ldapSync,
+  [if std.length(ldapSync) > 0 then '20_ldap_sync']: ldapSync,
   '30_rbac': rbac,
   '40_remove_kubeadmin_syncconfig': removeKubeAdmin,
 }

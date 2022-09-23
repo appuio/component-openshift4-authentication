@@ -1,0 +1,9 @@
+parameters:
+  kapitan:
+    dependencies:
+      - type: https
+        source: https://raw.githubusercontent.com/projectsyn/component-espejo/v1.0.1/lib/espejo.libsonnet
+        output_path: vendor/lib/espejo.libsonnet
+
+  espejo:
+    namespace: syn-espejo
