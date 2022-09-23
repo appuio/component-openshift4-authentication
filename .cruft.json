@@ -1,0 +1,25 @@
+{
+  "template": "https://github.com/projectsyn/commodore-component-template.git",
+  "commit": "f104a5fd69856c0e8cb7b27860876bd2f6386cf6",
+  "checkout": "main",
+  "context": {
+    "cookiecutter": {
+      "name": "OpenShift 4 Authentication",
+      "slug": "openshift4-authentication",
+      "parameter_key": "openshift4_authentication",
+      "test_cases": "defaults",
+      "add_lib": "n",
+      "add_pp": "n",
+      "add_golden": "y",
+      "add_matrix": "n",
+      "add_go_unit": "n",
+      "copyright_holder": "VSHN AG <info@vshn.ch>",
+      "copyright_year": "2021",
+      "github_owner": "appuio",
+      "github_name": "component-openshift4-authentication",
+      "github_url": "https://github.com/appuio/component-openshift4-authentication",
+      "_template": "https://github.com/projectsyn/commodore-component-template.git"
+    }
+  },
+  "directory": null
+}
