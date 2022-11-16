@@ -50,6 +50,42 @@ The component also deploys a `RoleBinding` and a `ClusterRoleBinding` to ensure 
 
 See https://kb.vshn.ch/oc4/how-tos/authentication/sudo.html[how-to] and https://kb.vshn.ch/oc4/explanations/sudo.html[explanation] for further details.
 
+== Impersonating Users
+
+`impersonate` permissions are granted to the groups defined in `openshift4_authentication.sudoGroups`.
+
+This allows users in the sudoers group to impersonate other users in the cluster.
+
+You may check the permissions of a user or service account by running:
+
+[source,console]
+----
+kubectl --as=system:serviceaccount:NS:SERVICEACCOUNT auth can-i get deployments/test
+kubectl --as=USER auth can-i get deployments/test
+----
+
+Impersonation is logged in the Kube API server audit logs.
+
+[source,console]
+----
+❯ oc adm node-logs --role=master --path=kube-apiserver/audit.log | grep "impersonatedUser" | jq
+{
+  "kind": "Event",
+  [...]
+  "verb": "get",
+  "user":
+    {
+      "username": "chuck.testa",
+    },
+  "impersonatedUser":
+    {
+      "username": "john.dwight",
+      "groups": ["system:authenticated"]
+    },
+[...]
+}
+----
+
 == Removing the kubeadmin user
 
 The component deploys an Espejo syncconfig which deletes the `kubeadmin` secret in namespace `kube-system`.

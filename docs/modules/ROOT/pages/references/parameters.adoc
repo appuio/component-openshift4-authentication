@@ -18,8 +18,8 @@ IMPORTANT: The component may not work correctly if this parameter is changed.
 type:: string
 default:: `null`
 
-The OpenShift group name for which the component configures RBAC to allow members to impersonate the cluster administrator.
-See xref:index.adoc#_cluster_admin_sudo[Cluster Admin Sudo] for more details.
+The OpenShift group name for which the component configures RBAC to allow members to impersonate users and service accounts, including the cluster administrator.
+See xref:index.adoc#_cluster_admin_sudo[Cluster Admin Sudo] and xref:index.adoc#_impersonating_users[Impersonating Users] for more details.
 
 [WARNING]
 ====
@@ -34,10 +34,11 @@ Use `sudoGroups` instead.
 type:: list
 default:: `[]`
 
-The OpenShift group names for which the component configures RBAC to allow members to impersonate the cluster administrator.
-See xref:index.adoc#_cluster_admin_sudo[Cluster Admin Sudo] for more details.
+The OpenShift group names for which the component configures RBAC to allow members to impersonate users and service accounts, including the cluster administrator.
+See xref:index.adoc#_cluster_admin_sudo[Cluster Admin Sudo] and xref:index.adoc#_impersonating_users[Impersonating Users] for more details.
 
 Groups can be removed from the hierarchy by prefixing them with a `~` character.
+
 
 === Example
 
