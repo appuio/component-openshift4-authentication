@@ -11,6 +11,7 @@ rules:
     resources:
       - users
       - serviceaccounts
+      - groups
     verbs:
       - impersonate
   - apiGroups:

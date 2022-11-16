@@ -56,7 +56,8 @@ See https://kb.vshn.ch/oc4/how-tos/authentication/sudo.html[how-to] and https://
 
 This allows users in the sudoers group to impersonate other users in the cluster.
 
-You may check the permissions of a user or service account by running:
+This is especially useful for debugging RBAC issues affecting other users.
+You can check the permissions of a user or service account by running:
 
 [source,console]
 ----
@@ -64,7 +65,18 @@ kubectl --as=system:serviceaccount:NS:SERVICEACCOUNT auth can-i get deployments/
 kubectl --as=USER auth can-i get deployments/test
 ----
 
-Impersonation is logged in the Kube API server audit logs.
+When impersonating a user, their groups aren't included in the impersonation.
+It's however possible to add groups to the impersonated user:
+
+[source,console]
+----
+kubectl --as=USER --as-group=GROUP auth can-i get deployments/test <1>
+----
+<1> It's not necessary to pass an existing user if you only want to impersonate groups.
+
+Group impersonation is only possible when impersonating a user.
+
+Impersonation is logged in the Kubernetes API server audit logs.
 
 [source,console]
 ----
