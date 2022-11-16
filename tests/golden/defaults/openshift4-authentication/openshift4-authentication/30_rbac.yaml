@@ -8,10 +8,10 @@ metadata:
 rules:
   - apiGroups:
       - ''
-    resourceNames:
-      - cluster-admin
     resources:
       - users
+      - serviceaccounts
+      - groups
     verbs:
       - impersonate
   - apiGroups:
