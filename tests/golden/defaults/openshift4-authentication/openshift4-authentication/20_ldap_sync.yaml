@@ -40,9 +40,9 @@ subjects:
 ---
 apiVersion: v1
 data:
-  ca-bundle.crt: '-----BEGIN CERTIFICATE-----
-
-    -----END CERTIFICATE-----'
+  ca-bundle.crt: |-
+    -----BEGIN CERTIFICATE-----
+    -----END CERTIFICATE-----
 kind: ConfigMap
 metadata:
   annotations:
@@ -67,21 +67,39 @@ metadata:
   namespace: openshift-config
 stringData:
   blacklist.txt: ''
-  config.yaml: "\"apiVersion\": \"v1\"\n\"bindDN\": \"uid=service,ou=idp,dc=company,dc=tld\"\
-    \n\"bindPassword\": \"t-silent-test-1234/c-green-test-1234/ldap-auth/bindPassword\"\
-    \n\"ca\": \"/etc/sync-config-ca/ca-bundle.crt\"\n\"kind\": \"LDAPSyncConfig\"\n\
-    \"rfc2307\":\n  \"groupMembershipAttributes\":\n  - \"uniqueMember\"\n  \"groupNameAttributes\"\
-    :\n  - \"cn\"\n  \"groupUIDAttribute\": \"dn\"\n  \"groupsQuery\":\n    \"baseDN\"\
-    : \"ou=Groups,dc=company,dc=tld\"\n    \"derefAliases\": \"never\"\n    \"filter\"\
-    : \"(&(objectclass=groupOfUniqueNames)(|(cn=cluster-admins)))\"\n    \"pageSize\"\
-    : 0\n    \"scope\": \"sub\"\n  \"tolerateMemberNotFoundErrors\": false\n  \"tolerateMemberOutOfScopeErrors\"\
-    : false\n  \"userNameAttributes\":\n  - \"uid\"\n  \"userUIDAttribute\": \"dn\"\
-    \n  \"usersQuery\":\n    \"baseDN\": \"dc=company,dc=tld\"\n    \"derefAliases\"\
-    : \"never\"\n    \"pageSize\": 0\n    \"scope\": \"sub\"\n\"url\": \"ldaps://ldap.company.tld:636/ou=services,dc=company,dc=tld?uid\""
+  config.yaml: |-
+    "apiVersion": "v1"
+    "bindDN": "uid=service,ou=idp,dc=company,dc=tld"
+    "bindPassword": "t-silent-test-1234/c-green-test-1234/ldap-auth/bindPassword"
+    "ca": "/etc/sync-config-ca/ca-bundle.crt"
+    "kind": "LDAPSyncConfig"
+    "rfc2307":
+      "groupMembershipAttributes":
+      - "uniqueMember"
+      "groupNameAttributes":
+      - "cn"
+      "groupUIDAttribute": "dn"
+      "groupsQuery":
+        "baseDN": "ou=Groups,dc=company,dc=tld"
+        "derefAliases": "never"
+        "filter": "(&(objectclass=groupOfUniqueNames)(|(cn=cluster-admins)))"
+        "pageSize": 0
+        "scope": "sub"
+      "tolerateMemberNotFoundErrors": false
+      "tolerateMemberOutOfScopeErrors": false
+      "userNameAttributes":
+      - "uid"
+      "userUIDAttribute": "dn"
+      "usersQuery":
+        "baseDN": "dc=company,dc=tld"
+        "derefAliases": "never"
+        "pageSize": 0
+        "scope": "sub"
+    "url": "ldaps://ldap.company.tld:636/ou=services,dc=company,dc=tld?uid"
   whitelist.txt: ''
 type: Opaque
 ---
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   annotations: {}
@@ -212,21 +230,39 @@ metadata:
   namespace: openshift-config
 stringData:
   blacklist.txt: ''
-  config.yaml: "\"apiVersion\": \"v1\"\n\"bindDN\": \"uid=service,ou=idp,dc=company,dc=tld\"\
-    \n\"bindPassword\": \"t-silent-test-1234/c-green-test-1234/ldap2-auth/bindPassword\\\
-    \"\"\n\"ca\": \"/etc/sync-config-ca/ca-bundle.crt\"\n\"kind\": \"LDAPSyncConfig\"\
-    \n\"rfc2307\":\n  \"groupMembershipAttributes\":\n  - \"uniqueMember\"\n  \"groupNameAttributes\"\
-    :\n  - \"cn\"\n  \"groupUIDAttribute\": \"dn\"\n  \"groupsQuery\":\n    \"baseDN\"\
-    : \"ou=Groups,dc=company,dc=tld\"\n    \"derefAliases\": \"never\"\n    \"filter\"\
-    : \"(&(objectclass=groupOfUniqueNames)(|(cn=cluster-admins)))\"\n    \"pageSize\"\
-    : 0\n    \"scope\": \"sub\"\n  \"tolerateMemberNotFoundErrors\": false\n  \"tolerateMemberOutOfScopeErrors\"\
-    : false\n  \"userNameAttributes\":\n  - \"uid\"\n  \"userUIDAttribute\": \"dn\"\
-    \n  \"usersQuery\":\n    \"baseDN\": \"dc=company,dc=tld\"\n    \"derefAliases\"\
-    : \"never\"\n    \"pageSize\": 0\n    \"scope\": \"sub\"\n\"url\": \"ldaps://ldap.company.tld:636/ou=services,dc=company,dc=tld?uid\""
+  config.yaml: |-
+    "apiVersion": "v1"
+    "bindDN": "uid=service,ou=idp,dc=company,dc=tld"
+    "bindPassword": "t-silent-test-1234/c-green-test-1234/ldap2-auth/bindPassword\""
+    "ca": "/etc/sync-config-ca/ca-bundle.crt"
+    "kind": "LDAPSyncConfig"
+    "rfc2307":
+      "groupMembershipAttributes":
+      - "uniqueMember"
+      "groupNameAttributes":
+      - "cn"
+      "groupUIDAttribute": "dn"
+      "groupsQuery":
+        "baseDN": "ou=Groups,dc=company,dc=tld"
+        "derefAliases": "never"
+        "filter": "(&(objectclass=groupOfUniqueNames)(|(cn=cluster-admins)))"
+        "pageSize": 0
+        "scope": "sub"
+      "tolerateMemberNotFoundErrors": false
+      "tolerateMemberOutOfScopeErrors": false
+      "userNameAttributes":
+      - "uid"
+      "userUIDAttribute": "dn"
+      "usersQuery":
+        "baseDN": "dc=company,dc=tld"
+        "derefAliases": "never"
+        "pageSize": 0
+        "scope": "sub"
+    "url": "ldaps://ldap.company.tld:636/ou=services,dc=company,dc=tld?uid"
   whitelist.txt: ''
 type: Opaque
 ---
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   annotations: {}
