@@ -30,7 +30,7 @@ local sudoGroupSubjects = std.map(
 
 local sudoClusterRole = kube.ClusterRole('sudo-impersonator') {
   rules: [ {
-    apiGroups: [ '' ],
+    apiGroups: [ '', 'authorization.k8s.io' ],
     resources: [ 'users', 'serviceaccounts', 'groups' ],
     verbs: [ 'impersonate' ],
   }, {
