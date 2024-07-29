@@ -20,6 +20,10 @@ local hasTokenMaxAge = std.type(params.token.maxAgeSeconds) == 'number';
 local hasTokenConfig = hasTokenTimeouts || hasTokenMaxAge;
 
 local template = com.namespaced(params.namespace, kube.Secret('oauth-templates') {
+  metadata+: {
+    annotations+: common.argoAnnotations,
+    labels+: common.commonLabels,
+  },
   data:: {},
   stringData: {
     [if hasErrorTemplate then 'errors.html']: params.templates.err,
