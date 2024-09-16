@@ -27,7 +27,8 @@ local syncConfig(namespace, idp, sa) =
         idp.ldap.bindPassword
       else
         params.secrets[idp.ldap.bindPassword.name].bindPassword,
-    ca: ca_mount + files.caBundle,
+    [if std.objectHas(idp.ldap.sync, 'insecure') then 'insecure']: true,
+    [if !std.get(idp.ldap.sync, 'insecure', false) then 'ca']: ca_mount + files.caBundle,
     [if std.objectHas(idp.ldap.sync, 'rfc2307') then 'rfc2307']: idp.ldap.sync.rfc2307,
     [if std.objectHas(idp.ldap.sync, 'activeDirectory') then 'activeDirectory']: idp.ldap.sync.activeDirectory,
     [if std.objectHas(idp.ldap.sync, 'augmentedActiveDirectory') then 'augmentedActiveDirectory']: idp.ldap.sync.augmentedActiveDirectory,
