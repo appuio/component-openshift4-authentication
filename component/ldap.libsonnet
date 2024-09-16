@@ -20,7 +20,11 @@ local syncConfig(namespace, idp, sa) =
   local syncCfg = {
     kind: 'LDAPSyncConfig',
     apiVersion: 'v1',
-    url: idp.ldap.url,
+    url:
+      if std.objectHas(idp.ldap.sync, 'url') then
+        idp.ldap.sync.url
+      else
+        idp.ldap.url,
     bindDN: idp.ldap.bindDN,
     bindPassword:
       if std.isString(idp.ldap.bindPassword) then
