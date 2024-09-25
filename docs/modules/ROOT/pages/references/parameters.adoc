@@ -81,8 +81,24 @@ The component accepts custom CA certificate bundles for LDAP providers in key `c
 If a CA certificate bundle is provided like that, the component will generate a ConfigMap containing the CA certificate bundle, and will update the identity provider config to reference that ConfigMap.
 ====
 
-
 Users should use the component's xref:how-tos/configure-secrets.adoc[secret configuration mechanism] to deploy secrets containing identity provider credentials.
+
+[TIP]
+====
+There are different black-/whitelist parameters for the sync and the prune jobs, as they require different parameters.
+
+[source,yaml]
+----
+identityProviders:
+  custom-ldap:
+    ldap:
+      sync:
+        whitelist-sync: |-
+          CN=cluster-access,OU=Groups,DC=myldap,DC=local
+        whitelist-prune: |-
+          cluster-access
+----
+====
 
 == `templates`
 
@@ -131,7 +147,7 @@ See the upstream documentation on https://docs.openshift.com/container-platform/
 == `ldapSync`
 
 [horizontal]
-type:: dict
+type:: string
 default::
 +
 [source,yaml]
