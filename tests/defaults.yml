@@ -47,6 +47,10 @@ parameters:
             -----BEGIN CERTIFICATE-----
             -----END CERTIFICATE-----
           sync:
+            whitelist_sync: |-
+              cn=cluster-access,ou=idp,dc=company,dc=tld
+            whitelist_prune: |-
+              cluster-access
             rfc2307:
               groupsQuery:
                 baseDN: ou=Groups,dc=company,dc=tld

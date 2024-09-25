@@ -93,9 +93,9 @@ identityProviders:
   custom-ldap:
     ldap:
       sync:
-        whitelist-sync: |-
+        whitelist_sync: |-
           CN=cluster-access,OU=Groups,DC=myldap,DC=local
-        whitelist-prune: |-
+        whitelist_prune: |-
           cluster-access
 ----
 ====

@@ -97,8 +97,8 @@ stringData:
         "pageSize": 0
         "scope": "sub"
     "url": "ldaps://ldap.company.tld:636/ou=services,dc=company,dc=tld?uid"
-  whitelist-prune.txt: ''
-  whitelist-sync.txt: ''
+  whitelist-prune.txt: cluster-access
+  whitelist-sync.txt: cn=cluster-access,ou=idp,dc=company,dc=tld
 type: Opaque
 ---
 apiVersion: batch/v1

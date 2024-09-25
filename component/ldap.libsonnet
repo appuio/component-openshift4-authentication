@@ -64,10 +64,10 @@ local syncConfig(namespace, idp, sa) =
     com.namespaced(namespace, kube.Secret(name) {
       stringData: {
         [files.config]: std.manifestYamlDoc(syncCfg),
-        [files.blacklist_sync]: if std.objectHas(idp.ldap.sync, 'blacklist-sync') then idp.ldap.sync.blacklist_sync else '',
-        [files.blacklist_prune]: if std.objectHas(idp.ldap.sync, 'blacklist-prune') then idp.ldap.sync.blacklist_prune else '',
-        [files.whitelist_sync]: if std.objectHas(idp.ldap.sync, 'whitelist-sync') then idp.ldap.sync.whitelist_sync else '',
-        [files.whitelist_prune]: if std.objectHas(idp.ldap.sync, 'whitelist-prune') then idp.ldap.sync.whitelist_prune else '',
+        [files.blacklist_sync]: if std.objectHas(idp.ldap.sync, 'blacklist_sync') then idp.ldap.sync.blacklist_sync else '',
+        [files.blacklist_prune]: if std.objectHas(idp.ldap.sync, 'blacklist_prune') then idp.ldap.sync.blacklist_prune else '',
+        [files.whitelist_sync]: if std.objectHas(idp.ldap.sync, 'whitelist_sync') then idp.ldap.sync.whitelist_sync else '',
+        [files.whitelist_prune]: if std.objectHas(idp.ldap.sync, 'whitelist_prune') then idp.ldap.sync.whitelist_prune else '',
       },
     }),
 
