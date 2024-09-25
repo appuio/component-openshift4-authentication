@@ -21,6 +21,7 @@ parameters:
 
     ldapSync:
       schedule: '%d * * * *'
+      customCommand: {}
 
     secrets: {}
       # my-secret-example:

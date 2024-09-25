@@ -69,6 +69,7 @@ local syncConfig(namespace, idp, sa) =
 
     local n = std.foldl(function(x, y) x + y, std.encodeUTF8(std.md5(inv.parameters.cluster.name)), 0);
     local config_volume = 'sync-config';
+    local custom_command = std.get(idp.ldap.sync, 'command', {});
     local ca_volume = 'ldap-ca';
     local security_context = {
       allowPrivilegeEscalation: false,
@@ -92,7 +93,7 @@ local syncConfig(namespace, idp, sa) =
                 local container(command) = kube.Container(command) {
                   image: std.join(':', std.prune([ params.images.sync.image, params.images.sync.tag ])),
                   securityContext: security_context,
-                  command: [
+                  command: std.get(custom_command, command, [
                     'oc',
                     'adm',
                     'groups',
@@ -101,7 +102,7 @@ local syncConfig(namespace, idp, sa) =
                     '--confirm',
                     '--blacklist=' + config_mount + files.blacklist,
                     '--whitelist=' + config_mount + files.whitelist,
-                  ],
+                  ]),
                   volumeMounts_+: {
                     [config_volume]: { mountPath: config_mount },
                     [ca_volume]: { mountPath: ca_mount },

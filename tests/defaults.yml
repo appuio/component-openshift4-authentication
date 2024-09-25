@@ -47,6 +47,11 @@ parameters:
             -----BEGIN CERTIFICATE-----
             -----END CERTIFICATE-----
           sync:
+            command:
+              prune:
+                - oc
+                - adm
+                - do-nothing
             rfc2307:
               groupsQuery:
                 baseDN: ou=Groups,dc=company,dc=tld
