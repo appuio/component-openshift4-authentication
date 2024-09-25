@@ -137,6 +137,18 @@ default::
 [source,yaml]
 ----
 schedule: '%d * * * *'
+command: {}
+----
+
+=== `ldapSync.schedule`
+
+[horizontal]
+type:: string
+default::
++
+[source,yaml]
+----
+schedule: '%d * * * *'
 ----
 
 This parameter allows configuring the LDAP sync CronJob schedule.
@@ -145,6 +157,21 @@ The schedule defined here will be applied for LDAP identity providers which don'
 The component will apply the logic documented in the Project Syn Jsonnet best practices on https://syn.tools/syn/explanations/jsonnet.html#_randomize_cron_schedules[randomizing cron schedules] to avoid generating load spikes on an LDAP server.
 
 NOTE: The component may break if you specify a schedule which doesn't contain exactly one `%d` format specifier.
+
+=== `ldapSync.command`
+
+[horizontal]
+type:: dict
+default::
++
+[source,yaml]
+----
+command: {}
+----
+
+This parameter allows overwriting the commands used for `sync` and `prune`.
+
+NOTE: The command defined here will apply to all LDAP idedtity providers.
 
 == `secrets`
 

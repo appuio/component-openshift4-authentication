@@ -155,7 +155,9 @@ spec:
               command:
                 - oc
                 - adm
-                - do-nothing
+                - do
+                - something
+                - else
               env: []
               image: image-registry.openshift-image-registry.svc:5000/openshift/cli
               imagePullPolicy: IfNotPresent
@@ -313,12 +315,9 @@ spec:
               command:
                 - oc
                 - adm
-                - groups
-                - prune
-                - --sync-config=/etc/sync-config/config.yaml
-                - --confirm
-                - --blacklist=/etc/sync-config/blacklist.txt
-                - --whitelist=/etc/sync-config/whitelist.txt
+                - do
+                - something
+                - else
               env: []
               image: image-registry.openshift-image-registry.svc:5000/openshift/cli
               imagePullPolicy: IfNotPresent

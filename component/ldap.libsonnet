@@ -93,7 +93,7 @@ local syncConfig(namespace, idp, sa) =
                 local container(command) = kube.Container(command) {
                   image: std.join(':', std.prune([ params.images.sync.image, params.images.sync.tag ])),
                   securityContext: security_context,
-                  command: std.get(custom_command, command, [
+                  command: std.get(params.ldapSync.command, command, [
                     'oc',
                     'adm',
                     'groups',

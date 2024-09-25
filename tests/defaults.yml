@@ -47,11 +47,6 @@ parameters:
             -----BEGIN CERTIFICATE-----
             -----END CERTIFICATE-----
           sync:
-            command:
-              prune:
-                - oc
-                - adm
-                - do-nothing
             rfc2307:
               groupsQuery:
                 baseDN: ou=Groups,dc=company,dc=tld
@@ -119,3 +114,12 @@ parameters:
           clientSecret:
             name: oidc-client
           issuer: https://sso.company.tld/auth/realms/master
+
+    ldapSync:
+      command:
+        prune:
+          - oc
+          - adm
+          - do
+          - something
+          - else
