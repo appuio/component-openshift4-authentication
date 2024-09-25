@@ -14,8 +14,10 @@ local syncConfig(namespace, idp, sa) =
   local files = {
     caBundle: 'ca-bundle.crt',
     config: 'config.yaml',
-    blacklist: 'blacklist.txt',
-    whitelist: 'whitelist.txt',
+    blacklist_sync: 'blacklist-sync.txt',
+    blacklist_prune: 'blacklist-prune.txt',
+    whitelist_sync: 'whitelist-sync.txt',
+    whitelist_prune: 'whitelist-prune.txt',
   };
   local syncCfg = {
     kind: 'LDAPSyncConfig',
@@ -61,9 +63,11 @@ local syncConfig(namespace, idp, sa) =
     )),
     com.namespaced(namespace, kube.Secret(name) {
       stringData: {
-        [files.blacklist]: if std.objectHas(idp.ldap.sync, 'blacklist') then idp.ldap.sync.blacklist else '',
         [files.config]: std.manifestYamlDoc(syncCfg),
-        [files.whitelist]: if std.objectHas(idp.ldap.sync, 'whitelist') then idp.ldap.sync.whitelist else '',
+        [files.blacklist_sync]: if std.objectHas(idp.ldap.sync, 'blacklist-sync') then idp.ldap.sync.blacklist_sync else '',
+        [files.blacklist_prune]: if std.objectHas(idp.ldap.sync, 'blacklist-prune') then idp.ldap.sync.blacklist_prune else '',
+        [files.whitelist_sync]: if std.objectHas(idp.ldap.sync, 'whitelist-sync') then idp.ldap.sync.whitelist_sync else '',
+        [files.whitelist_prune]: if std.objectHas(idp.ldap.sync, 'whitelist-prune') then idp.ldap.sync.whitelist_prune else '',
       },
     }),
 
@@ -93,16 +97,16 @@ local syncConfig(namespace, idp, sa) =
                 local container(command) = kube.Container(command) {
                   image: std.join(':', std.prune([ params.images.sync.image, params.images.sync.tag ])),
                   securityContext: security_context,
-                  command: std.get(params.ldapSync.command, command, [
+                  command: [
                     'oc',
                     'adm',
                     'groups',
                     command,
                     '--sync-config=' + config_mount + files.config,
                     '--confirm',
-                    '--blacklist=' + config_mount + files.blacklist,
-                    '--whitelist=' + config_mount + files.whitelist,
-                  ]),
+                    '--blacklist=' + config_mount + std.get(files, 'blacklist_%s' % command),
+                    '--whitelist=' + config_mount + std.get(files, 'whitelist_%s' % command),
+                  ],
                   volumeMounts_+: {
                     [config_volume]: { mountPath: config_mount },
                     [ca_volume]: { mountPath: ca_mount },

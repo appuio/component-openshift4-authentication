@@ -114,12 +114,3 @@ parameters:
           clientSecret:
             name: oidc-client
           issuer: https://sso.company.tld/auth/realms/master
-
-    ldapSync:
-      command:
-        prune:
-          - oc
-          - adm
-          - do
-          - something
-          - else

@@ -81,8 +81,24 @@ The component accepts custom CA certificate bundles for LDAP providers in key `c
 If a CA certificate bundle is provided like that, the component will generate a ConfigMap containing the CA certificate bundle, and will update the identity provider config to reference that ConfigMap.
 ====
 
-
 Users should use the component's xref:how-tos/configure-secrets.adoc[secret configuration mechanism] to deploy secrets containing identity provider credentials.
+
+[TIP]
+====
+There are different black-/whitelist parameters for the sync and the prune jobs, as they require different parameters.
+
+[source,yaml]
+----
+identityProviders:
+  custom-ldap:
+    ldap:
+      sync:
+        whitelist-sync: |-
+          CN=cluster-access,OU=Groups,DC=myldap,DC=local
+        whitelist-prune: |-
+          cluster-access
+----
+====
 
 == `templates`
 
@@ -131,18 +147,6 @@ See the upstream documentation on https://docs.openshift.com/container-platform/
 == `ldapSync`
 
 [horizontal]
-type:: dict
-default::
-+
-[source,yaml]
-----
-schedule: '%d * * * *'
-command: {}
-----
-
-=== `ldapSync.schedule`
-
-[horizontal]
 type:: string
 default::
 +
@@ -157,21 +161,6 @@ The schedule defined here will be applied for LDAP identity providers which don'
 The component will apply the logic documented in the Project Syn Jsonnet best practices on https://syn.tools/syn/explanations/jsonnet.html#_randomize_cron_schedules[randomizing cron schedules] to avoid generating load spikes on an LDAP server.
 
 NOTE: The component may break if you specify a schedule which doesn't contain exactly one `%d` format specifier.
-
-=== `ldapSync.command`
-
-[horizontal]
-type:: dict
-default::
-+
-[source,yaml]
-----
-command: {}
-----
-
-This parameter allows overwriting the commands used for `sync` and `prune`.
-
-NOTE: The command defined here will apply to all LDAP idedtity providers.
 
 == `secrets`
 

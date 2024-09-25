@@ -66,7 +66,8 @@ metadata:
   name: ldap-sync-company-ldap
   namespace: openshift-config
 stringData:
-  blacklist.txt: ''
+  blacklist-prune.txt: ''
+  blacklist-sync.txt: ''
   config.yaml: |-
     "apiVersion": "v1"
     "bindDN": "uid=service,ou=idp,dc=company,dc=tld"
@@ -96,7 +97,8 @@ stringData:
         "pageSize": 0
         "scope": "sub"
     "url": "ldaps://ldap.company.tld:636/ou=services,dc=company,dc=tld?uid"
-  whitelist.txt: ''
+  whitelist-prune.txt: ''
+  whitelist-sync.txt: ''
 type: Opaque
 ---
 apiVersion: batch/v1
@@ -128,8 +130,8 @@ spec:
                 - sync
                 - --sync-config=/etc/sync-config/config.yaml
                 - --confirm
-                - --blacklist=/etc/sync-config/blacklist.txt
-                - --whitelist=/etc/sync-config/whitelist.txt
+                - --blacklist=/etc/sync-config/blacklist-sync.txt
+                - --whitelist=/etc/sync-config/whitelist-sync.txt
               env: []
               image: image-registry.openshift-image-registry.svc:5000/openshift/cli
               imagePullPolicy: IfNotPresent
@@ -155,9 +157,12 @@ spec:
               command:
                 - oc
                 - adm
-                - do
-                - something
-                - else
+                - groups
+                - prune
+                - --sync-config=/etc/sync-config/config.yaml
+                - --confirm
+                - --blacklist=/etc/sync-config/blacklist-prune.txt
+                - --whitelist=/etc/sync-config/whitelist-prune.txt
               env: []
               image: image-registry.openshift-image-registry.svc:5000/openshift/cli
               imagePullPolicy: IfNotPresent
@@ -226,7 +231,8 @@ metadata:
   name: ldap-sync-other-ldap
   namespace: openshift-config
 stringData:
-  blacklist.txt: ''
+  blacklist-prune.txt: ''
+  blacklist-sync.txt: ''
   config.yaml: |-
     "apiVersion": "v1"
     "bindDN": "uid=service,ou=idp,dc=company,dc=tld"
@@ -256,7 +262,8 @@ stringData:
         "pageSize": 0
         "scope": "sub"
     "url": "ldaps://ldap.company.tld:636/ou=services,dc=company,dc=tld?uid"
-  whitelist.txt: ''
+  whitelist-prune.txt: ''
+  whitelist-sync.txt: ''
 type: Opaque
 ---
 apiVersion: batch/v1
@@ -288,8 +295,8 @@ spec:
                 - sync
                 - --sync-config=/etc/sync-config/config.yaml
                 - --confirm
-                - --blacklist=/etc/sync-config/blacklist.txt
-                - --whitelist=/etc/sync-config/whitelist.txt
+                - --blacklist=/etc/sync-config/blacklist-sync.txt
+                - --whitelist=/etc/sync-config/whitelist-sync.txt
               env: []
               image: image-registry.openshift-image-registry.svc:5000/openshift/cli
               imagePullPolicy: IfNotPresent
@@ -315,9 +322,12 @@ spec:
               command:
                 - oc
                 - adm
-                - do
-                - something
-                - else
+                - groups
+                - prune
+                - --sync-config=/etc/sync-config/config.yaml
+                - --confirm
+                - --blacklist=/etc/sync-config/blacklist-prune.txt
+                - --whitelist=/etc/sync-config/whitelist-prune.txt
               env: []
               image: image-registry.openshift-image-registry.svc:5000/openshift/cli
               imagePullPolicy: IfNotPresent
