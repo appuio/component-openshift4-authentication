@@ -1,5 +1,7 @@
 parameters:
   openshift4_authentication:
+    =_metadata:
+      multi_tenant: true
     namespace: openshift-config
     # Deprecated: add name to 'sudoGroups' instead.
     sudoGroupName: null
