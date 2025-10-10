@@ -2,7 +2,7 @@
 local common = import 'common.libjsonnet';
 local ldap = import 'ldap.libsonnet';
 local com = import 'lib/commodore.libjsonnet';
-local espejo = import 'lib/espejo.libsonnet';
+local esp = import 'lib/espejote.libsonnet';
 local kap = import 'lib/kapitan.libjsonnet';
 local kube = import 'lib/kube.libjsonnet';
 local rbac = import 'rbac.libsonnet';
@@ -116,30 +116,67 @@ local clusterOAuth = kube._Object('config.openshift.io/v1', 'OAuth', 'cluster') 
   },
 };
 
-local removeKubeAdmin = espejo.syncConfig('remove-kube-admin') {
-  metadata+: {
-    annotations+: {
-      // Remove kubeadmin secret after oauth providers have been configured
-      'argocd.argoproj.io/sync-wave': '10',
+local removeKubeAdmin =
+  local sa = kube.ServiceAccount('kube-admin-manager') {
+    metadata+: {
+      namespace: params.namespace,
     },
-    labels+: {
-      'app.kubernetes.io/component': 'openshift4-authentication',
-      'app.kubernetes.io/managed-by': 'commodore',
+  };
+  local role = kube.Role('kube-admin-manager') {
+    metadata+: {
+      namespace: 'kube-system',
     },
-  },
-  spec: {
-    namespaceSelector: {
-      matchNames: [ 'kube-system' ],
-    },
-    deleteItems: [
+    rules: [
       {
-        apiVersion: 'v1',
-        kind: 'Secret',
-        name: 'kubeadmin',
+        apiGroups: [ '' ],
+        resources: [ 'secrets' ],
+        verbs: [ 'delete' ],
+        resourceNames: [ 'kubeadmin' ],
       },
     ],
-  },
-};
+  };
+  local rolebinding = kube.RoleBinding('kube-admin-manager') {
+    metadata+: {
+      namespace: 'kube-system',
+    },
+    roleRef_: role,
+    subjects_: [ sa ],
+  };
+  [
+    sa,
+    role,
+    rolebinding,
+    esp.managedResource('remove-kube-admin', params.namespace) {
+      metadata+: {
+        annotations+: {
+          // Remove kubeadmin secret after oauth providers have been configured
+          'argocd.argoproj.io/sync-wave': '10',
+        },
+        labels+: {
+          'app.kubernetes.io/component': 'openshift4-authentication',
+          'app.kubernetes.io/managed-by': 'commodore',
+        },
+      },
+      spec: {
+        serviceAccountRef: {
+          name: sa.metadata.name,
+        },
+        template: |||
+          local esp = import 'espejote.libsonnet';
+          local kubeadminSecret = {
+            apiVersion: 'v1',
+            kind: 'Secret',
+            metadata: {
+              name: 'kubeadmin',
+              namespace: 'kube-system',
+            }
+          };
+          esp.markForDelete(kubeadminSecret)
+        |||,
+        triggers: [],
+      },
+    },
+  ];
 
 // Define outputs below
 {
@@ -148,5 +185,5 @@ local removeKubeAdmin = espejo.syncConfig('remove-kube-admin') {
   '10_oauth': clusterOAuth,
   [if std.length(ldapSync) > 0 then '20_ldap_sync']: ldapSync,
   '30_rbac': rbac,
-  '40_remove_kubeadmin_syncconfig': removeKubeAdmin,
+  '40_remove_kubeadmin_managedresource': removeKubeAdmin,
 }
