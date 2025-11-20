@@ -50,14 +50,6 @@ sudoGroups:
 ----
 
 
-== `adminUserName`
-
-[horizontal]
-type:: string
-default:: `cluster-admin`
-
-The username used for cluster administrator impersonation.
-
 == `identityProviders`
 
 [horizontal]

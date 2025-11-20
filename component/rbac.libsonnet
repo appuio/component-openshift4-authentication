@@ -55,20 +55,6 @@ local sudoClusterRoleBindingView = kube.ClusterRoleBinding('sudo-view') {
   },
 };
 
-local clusterRoleBindingAdmin = kube.ClusterRoleBinding('impersonate-' + params.adminUserName) {
-  subjects: [ {
-    apiGroup: 'rbac.authorization.k8s.io',
-    kind: 'User',
-    name: params.adminUserName,
-  } ],
-  roleRef_: {
-    kind: 'ClusterRole',
-    metadata: {
-      name: 'cluster-admin',
-    },
-  },
-};
-
 local sudoAlertmanagerAccess =
   kube.RoleBinding('alertmanager-access-sudoer-groups') {
     metadata+: {
@@ -98,7 +84,6 @@ local sudoMonitoringRulesView =
   sudoClusterRole,
   sudoClusterRoleBinding,
   sudoClusterRoleBindingView,
-  clusterRoleBindingAdmin,
   sudoAlertmanagerAccess,
   sudoMonitoringRulesView,
 ]

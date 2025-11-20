@@ -7,8 +7,6 @@ parameters:
     sudoGroupName: null
     sudoGroups: []
 
-    # Username to be used for impersonation, aka sudo
-    adminUserName: cluster-admin
     identityProviders: {}
 
     templates:
