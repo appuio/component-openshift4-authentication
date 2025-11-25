@@ -7,6 +7,9 @@ parameters:
     sudoGroupName: null
     sudoGroups: []
 
+    selfProvisionerGroups:
+      - system:authenticated:oauth
+
     identityProviders: {}
 
     templates:
