@@ -1,7 +1,6 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  annotations: {}
   labels:
     name: sudo-impersonator
   name: sudo-impersonator
@@ -28,7 +27,6 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  annotations: {}
   labels:
     name: sudo-impersonator
   name: sudo-impersonator
@@ -47,7 +45,6 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  annotations: {}
   labels:
     name: sudo-view
   name: sudo-view
@@ -66,7 +63,6 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  annotations: {}
   labels:
     name: alertmanager-access-sudoer-groups
   name: alertmanager-access-sudoer-groups
@@ -86,7 +82,6 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  annotations: {}
   labels:
     name: monitoring-rules-view-sudoer-groups
   name: monitoring-rules-view-sudoer-groups
