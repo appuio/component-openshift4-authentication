@@ -6,6 +6,7 @@ local esp = import 'lib/espejote.libsonnet';
 local kap = import 'lib/kapitan.libjsonnet';
 local kube = import 'kube-ssa-compat.libsonnet';
 local rbac = import 'rbac.libsonnet';
+local sp = import 'self-provisioning.libsonnet';
 local inv = kap.inventory();
 // The hiera parameters for the component
 local params = inv.parameters.openshift4_authentication;
@@ -186,4 +187,5 @@ local removeKubeAdmin =
   [if std.length(ldapSync) > 0 then '20_ldap_sync']: ldapSync,
   '30_rbac': rbac,
   '40_remove_kubeadmin_managedresource': removeKubeAdmin,
+  '50_self_provisioning': sp.selfProvisioning,
 }

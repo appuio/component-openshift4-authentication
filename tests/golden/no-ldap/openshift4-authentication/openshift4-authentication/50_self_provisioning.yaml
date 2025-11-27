@@ -1,0 +1,97 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations:
+    syn.tools/source: https://github.com/appuio/component-openshift4-authentication.git
+  labels:
+    app.kubernetes.io/component: openshift4-authentication
+    app.kubernetes.io/managed-by: espejote
+    app.kubernetes.io/part-of: syn
+  name: rbac-clusterrolebinding-self-provisioners
+  namespace: syn-espejote
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  annotations:
+    syn.tools/source: https://github.com/appuio/component-openshift4-authentication.git
+  labels:
+    app.kubernetes.io/component: openshift4-authentication
+    app.kubernetes.io/managed-by: espejote
+    app.kubernetes.io/part-of: syn
+  name: syn-espejote:rbac-clusterrolebinding-self-provisioners
+rules:
+  - apiGroups:
+      - ''
+      - project.openshift.io
+    resources:
+      - projectrequests
+    verbs:
+      - create
+  - apiGroups:
+      - rbac.authorization.k8s.io
+    resourceNames:
+      - self-provisioners
+    resources:
+      - clusterrolebindings
+    verbs:
+      - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  annotations:
+    syn.tools/source: https://github.com/appuio/component-openshift4-authentication.git
+  labels:
+    app.kubernetes.io/component: openshift4-authentication
+    app.kubernetes.io/managed-by: espejote
+    app.kubernetes.io/part-of: syn
+  name: syn-espejote:rbac-clusterrolebinding-self-provisioners
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: syn-espejote:rbac-clusterrolebinding-self-provisioners
+subjects:
+  - kind: ServiceAccount
+    name: rbac-clusterrolebinding-self-provisioners
+    namespace: syn-espejote
+---
+apiVersion: espejote.io/v1alpha1
+kind: ManagedResource
+metadata:
+  annotations:
+    syn.tools/source: https://github.com/appuio/component-openshift4-authentication.git
+  labels:
+    app.kubernetes.io/component: openshift4-authentication
+    app.kubernetes.io/managed-by: espejote
+    app.kubernetes.io/name: rbac-clusterrolebinding-self-provisioners
+    app.kubernetes.io/part-of: syn
+  name: rbac-clusterrolebinding-self-provisioners
+  namespace: syn-espejote
+spec:
+  applyOptions:
+    force: true
+  serviceAccountRef:
+    name: rbac-clusterrolebinding-self-provisioners
+  template: |-
+    {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "ClusterRoleBinding",
+        "metadata": {
+            "name": "self-provisioners"
+        },
+        "roleRef": {
+            "apiGroup": "rbac.authorization.k8s.io",
+            "kind": "ClusterRole",
+            "name": "self-provisioner"
+        },
+        "subjects": [
+
+        ]
+    }
+  triggers:
+    - name: clusterrolebinding
+      watchResource:
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: ClusterRoleBinding
+        name: self-provisioners

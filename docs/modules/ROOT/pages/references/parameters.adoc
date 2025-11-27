@@ -40,6 +40,24 @@ See xref:index.adoc#_cluster_admin_sudo[Cluster Admin Sudo] and xref:index.adoc#
 Groups can be removed from the hierarchy by prefixing them with a `~` character.
 
 
+== `selfProvisionerGroups`
+
+[horizontal]
+type:: list
+default::
++
+[source,yaml]
+----
+selfProvisionerGroups:
+  - system:authenticated:oauth
+----
+
+The OpenShift group names for which the component allows self provisioning of projects/namespaces.
+See https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/postinstallation_configuration/post-install-preparing-for-users#default-roles_post-install-preparing-for-users[Default ClusterRoles] for more details.
+
+Groups can be removed from the hierarchy by prefixing them with a `~` character.
+
+
 === Example
 
 [source,yaml]
