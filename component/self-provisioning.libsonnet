@@ -23,6 +23,11 @@ local patch = {
   kind: 'ClusterRoleBinding',
   metadata: {
     name: 'self-provisioners',
+    annotations: {
+      // NOTE(sg): Set autoupdate=false to ensure that K8s/OpenShift don't
+      // update the subjects of this clusterrolebinding.
+      'rbac.authorization.kubernetes.io/autoupdate': 'false',
+    },
   },
   roleRef: {
     apiGroup: 'rbac.authorization.k8s.io',
