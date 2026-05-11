@@ -1,0 +1,171 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    name: group-prune
+  name: group-prune
+rules:
+  - apiGroups:
+      - user.openshift.io
+    resources:
+      - users
+    verbs:
+      - get
+      - list
+  - apiGroups:
+      - user.openshift.io
+    resources:
+      - groups
+    verbs:
+      - get
+      - list
+      - update
+      - patch
+  - apiGroups:
+      - oauth.openshift.io
+    resources:
+      - oauthaccesstokens
+    verbs:
+      - get
+      - list
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    name: group-prune
+  name: group-prune
+  namespace: openshift-config
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    name: group-prune
+  name: group-prune
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: group-prune
+subjects:
+  - apiGroup: ''
+    kind: ServiceAccount
+    name: group-prune
+    namespace: openshift-config
+---
+apiVersion: v1
+data:
+  prune: "#!/bin/bash\n\nset -fe\nIFS='\n'\n\nfor user in $( kubectl get user -ojson\
+    \ | jq -r '.items[].metadata.name' )\ndo\n\thasvalidtoken=\"false\"\n\tfor token\
+    \ in $( kubectl get oauthaccesstoken -ojson | jq -r \".items[] | select(.userName\
+    \ == \\\"$user\\\") | .metadata.name\" )\n\tdo\n\t\tif [[ -n \"$token\" ]]\n\t\
+    \tthen\n\t\t\tcreated=\"$( kubectl get oauthaccesstoken \"$token\" -ojson | jq\t\
+    -r .metadata.creationTimestamp )\"\n\t\t\texpires=\"$( kubectl get oauthaccesstoken\
+    \ \"$token\" -ojson | jq\t-r .expiresIn )\"\n\t\t\tif [[ \"$( date -d \"$created\
+    \ + $expires seconds\" '+%s' )\" > \"$( date '+%s' )\" ]]\n\t\t\tthen\n\t\t\t\t\
+    echo \"Token is valid.\"\n\t\t\t\thasvalidtoken=\"true\"\n\t\t\telse\n\t\t\t\t\
+    echo \"Token is invalid.\"\n\t\t\tfi\n\t\tfi\n\tdone\n\n\n\n\tif $hasvalidtoken\n\
+    \tthen\n\t\techo \"User $user has a valid token.\"\n\telse\n\t\tfor group in $(\
+    \ kubectl get group -ojson |  jq -r \".items[] | select( .users | index(\\\"$user\\\
+    \") ) | .metadata.name\" )\n\t\tdo\n\t\t\toc adm groups remove-users \"$group\"\
+    \ \"$user\"\n\t\tdone\n\tfi\n\techo\ndone\n"
+kind: ConfigMap
+metadata:
+  labels:
+    name: group-prune
+  name: group-prune
+  namespace: openshift-config
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels:
+    name: group-prune
+  name: group-prune
+  namespace: openshift-config
+spec:
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      completions: 1
+      parallelism: 1
+      template:
+        metadata:
+          labels:
+            name: group-prune
+        spec:
+          containers:
+            - args: []
+              command:
+                - /usr/local/bin/prune
+              env: []
+              image: quay.io/appuio/oc:v4.20
+              imagePullPolicy: IfNotPresent
+              name: group-prune
+              ports: []
+              stdin: false
+              tty: false
+              volumeMounts:
+                - mountPath: /usr/local/bin/prune
+                  name: scripts
+                  readOnly: true
+                  subPath: prune
+          imagePullSecrets: []
+          initContainers: []
+          nodeSelector:
+            node-role.kubernetes.io/infra: ''
+          restartPolicy: Never
+          serviceAccountName: group-prune
+          terminationGracePeriodSeconds: 30
+          volumes:
+            - configMap:
+                defaultMode: 360
+                name: group-prune
+              name: scripts
+  schedule: 16 * * * *
+  successfulJobsHistoryLimit: 3
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    name: group-prune-58542835
+  name: group-prune-58542835
+  namespace: openshift-config
+spec:
+  completions: 1
+  parallelism: 1
+  template:
+    metadata:
+      labels:
+        name: group-prune-58542835
+    spec:
+      containers:
+        - args: []
+          command:
+            - /usr/local/bin/prune
+          env: []
+          image: quay.io/appuio/oc:v4.20
+          imagePullPolicy: IfNotPresent
+          name: group-prune
+          ports: []
+          stdin: false
+          tty: false
+          volumeMounts:
+            - mountPath: /usr/local/bin/prune
+              name: scripts
+              readOnly: true
+              subPath: prune
+      imagePullSecrets: []
+      initContainers: []
+      nodeSelector:
+        node-role.kubernetes.io/infra: ''
+      restartPolicy: OnFailure
+      serviceAccountName: group-prune
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - configMap:
+            defaultMode: 360
+            name: group-prune
+          name: scripts

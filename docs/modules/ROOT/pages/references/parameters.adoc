@@ -192,3 +192,49 @@ default:: `{}`
 This parameter allows users to configure arbitrary OpenShift groups and group memberships.
 
 See the how-to on xref:how-tos/group-memberships.adoc[managing group memberships] for more details.
+
+== `groupPrune`
+
+[horizontal]
+type:: dict
+
+Parameters to enable and configure the automatic removing of users from groups if those users are not logged in.
+
+=== `enabled`
+
+[horizontal]
+type:: boolean
+default:: True
+
+Whether to enable automatic group pruning.
+
+=== `schedule`
+
+[horizontal]
+type:: string
+default:: '16 * * * *'
+
+Schedule of the CronJob in cron syntax.
+
+=== `jobHistoryLimit`
+
+[horizontal]
+type:: dict
+
+Parameters to configure the numbers of job objects to keep.
+
+==== `failed`
+
+[horizontal]
+type:: number
+default:: 3
+
+Number of failed jobs to keep.
+
+==== `successful`
+
+[horizontal]
+type:: number
+default:: 3
+
+Number of successful jobs to keep.
