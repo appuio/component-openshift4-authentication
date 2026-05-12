@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -feo pipefail
+
+for user in $( kubectl get user -ojsonpath='{.items[*].metadata.name}' )
+do
+	hasvalidtoken=$(kubectl get oauthaccesstoken -ojson | \
+		jq --arg user "$user" -r '[ .items[] | select(.userName == $user) | (.metadata.creationTimestamp | fromdate) + .expiresIn > now ] | any')
+
+	if $hasvalidtoken
+	then
+		echo "User $user has a valid token."
+	else
+		for group in $( kubectl get group -ojson |  jq --arg user "$user" -r '.items[] | select( .users | index($user) ) | .metadata.name' )
+		do
+			oc adm groups remove-users "$group" "$user"
+		done
+	fi
+	echo
+done

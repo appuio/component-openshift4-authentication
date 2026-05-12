@@ -1,10 +1,11 @@
 // main template for openshift4-authentication
 local common = import 'common.libjsonnet';
+local groupPrune = import 'group-prune.libsonnet';
+local kube = import 'kube-ssa-compat.libsonnet';
 local ldap = import 'ldap.libsonnet';
 local com = import 'lib/commodore.libjsonnet';
 local esp = import 'lib/espejote.libsonnet';
 local kap = import 'lib/kapitan.libjsonnet';
-local kube = import 'kube-ssa-compat.libsonnet';
 local rbac = import 'rbac.libsonnet';
 local sp = import 'self-provisioning.libsonnet';
 local inv = kap.inventory();
@@ -188,4 +189,5 @@ local removeKubeAdmin =
   '30_rbac': rbac,
   '40_remove_kubeadmin_managedresource': removeKubeAdmin,
   '50_self_provisioning': sp.selfProvisioning,
+  [if params.groupPrune.enabled then '60_group_prune']: groupPrune,
 }

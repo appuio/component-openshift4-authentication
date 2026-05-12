@@ -34,5 +34,18 @@ parameters:
       sync:
         image: image-registry.openshift-image-registry.svc:5000/openshift/cli
         tag: ~
+      oc:
+        image: quay.io/appuio/oc
+        tag: v4.20
 
     groupMemberships: {}
+
+    groupPrune:
+      enabled: true
+      serviceAccountName: group-prune
+      nodeSelector:
+        node-role.kubernetes.io/infra: ''
+      schedule: '16 * * * *'
+      jobHistoryLimit:
+        failed: 3
+        successful: 3

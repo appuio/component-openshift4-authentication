@@ -11,3 +11,6 @@ parameters:
   openshift4_authentication:
     selfProvisionerGroups:
       - ~system:authenticated:oauth
+
+    groupPrune:
+      enabled: false
