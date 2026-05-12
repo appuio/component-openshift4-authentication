@@ -1,8 +1,10 @@
 #!/bin/bash
 
 set -feo pipefail
+IFS='
+'
 
-for user in $( kubectl get user -ojsonpath='{.items[*].metadata.name}' )
+for user in $( kubectl get user -ojson | jq -r '.items[].metadata.name' )
 do
 	hasvalidtoken=$(kubectl get oauthaccesstoken -ojson | \
 		jq --arg user "$user" -r '[ .items[] | select(.userName == $user) | (.metadata.creationTimestamp | fromdate) + .expiresIn > now ] | any')

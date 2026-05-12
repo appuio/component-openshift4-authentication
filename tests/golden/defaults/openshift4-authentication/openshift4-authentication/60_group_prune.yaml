@@ -55,14 +55,15 @@ subjects:
 ---
 apiVersion: v1
 data:
-  prune: "#!/bin/bash\n\nset -feo pipefail\n\nfor user in $( kubectl get user -ojsonpath='{.items[*].metadata.name}'\
-    \ )\ndo\n\thasvalidtoken=$(kubectl get oauthaccesstoken -ojson | \\\n\t\tjq --arg\
-    \ user \"$user\" -r '[ .items[] | select(.userName == $user) | (.metadata.creationTimestamp\
-    \ | fromdate) + .expiresIn > now ] | any')\n\n\tif $hasvalidtoken\n\tthen\n\t\t\
-    echo \"User $user has a valid token.\"\n\telse\n\t\tfor group in $( kubectl get\
-    \ group -ojson |  jq --arg user \"$user\" -r '.items[] | select( .users | index($user)\
-    \ ) | .metadata.name' )\n\t\tdo\n\t\t\toc adm groups remove-users \"$group\" \"\
-    $user\"\n\t\tdone\n\tfi\n\techo\ndone\n"
+  prune: "#!/bin/bash\n\nset -feo pipefail\nIFS='\n'\n\nfor user in $( kubectl get\
+    \ user -ojson | jq -r '.items[].metadata.name' )\ndo\n\thasvalidtoken=$(kubectl\
+    \ get oauthaccesstoken -ojson | \\\n\t\tjq --arg user \"$user\" -r '[ .items[]\
+    \ | select(.userName == $user) | (.metadata.creationTimestamp | fromdate) + .expiresIn\
+    \ > now ] | any')\n\n\tif $hasvalidtoken\n\tthen\n\t\techo \"User $user has a\
+    \ valid token.\"\n\telse\n\t\tfor group in $( kubectl get group -ojson |  jq --arg\
+    \ user \"$user\" -r '.items[] | select( .users | index($user) ) | .metadata.name'\
+    \ )\n\t\tdo\n\t\t\toc adm groups remove-users \"$group\" \"$user\"\n\t\tdone\n\
+    \tfi\n\techo\ndone\n"
 kind: ConfigMap
 metadata:
   labels:
