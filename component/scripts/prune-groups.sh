@@ -1,29 +1,13 @@
 #!/bin/bash
 
-set -fe
+set -feo pipefail
 IFS='
 '
 
 for user in $( kubectl get user -ojson | jq -r '.items[].metadata.name' )
 do
-	hasvalidtoken="false"
-	for token in $( kubectl get oauthaccesstoken -ojson | jq -r ".items[] | select(.userName == \"$user\") | .metadata.name" )
-	do
-		if [[ -n "$token" ]]
-		then
-			created="$( kubectl get oauthaccesstoken "$token" -ojson | jq	-r .metadata.creationTimestamp )"
-			expires="$( kubectl get oauthaccesstoken "$token" -ojson | jq	-r .expiresIn )"
-			if [[ "$( date -d "$created + $expires seconds" '+%s' )" > "$( date '+%s' )" ]]
-			then
-				echo "Token is valid."
-				hasvalidtoken="true"
-			else
-				echo "Token is invalid."
-			fi
-		fi
-	done
-
-
+	hasvalidtoken=$(kubectl get oauthaccesstoken -ojson | \
+		jq --arg user "$user" -r '[ .items[] | select(.userName == $user) | (.metadata.creationTimestamp | fromdate) + .expiresIn > now ] | any')
 
 	if $hasvalidtoken
 	then

@@ -55,20 +55,15 @@ subjects:
 ---
 apiVersion: v1
 data:
-  prune: "#!/bin/bash\n\nset -fe\nIFS='\n'\n\nfor user in $( kubectl get user -ojson\
-    \ | jq -r '.items[].metadata.name' )\ndo\n\thasvalidtoken=\"false\"\n\tfor token\
-    \ in $( kubectl get oauthaccesstoken -ojson | jq -r \".items[] | select(.userName\
-    \ == \\\"$user\\\") | .metadata.name\" )\n\tdo\n\t\tif [[ -n \"$token\" ]]\n\t\
-    \tthen\n\t\t\tcreated=\"$( kubectl get oauthaccesstoken \"$token\" -ojson | jq\t\
-    -r .metadata.creationTimestamp )\"\n\t\t\texpires=\"$( kubectl get oauthaccesstoken\
-    \ \"$token\" -ojson | jq\t-r .expiresIn )\"\n\t\t\tif [[ \"$( date -d \"$created\
-    \ + $expires seconds\" '+%s' )\" > \"$( date '+%s' )\" ]]\n\t\t\tthen\n\t\t\t\t\
-    echo \"Token is valid.\"\n\t\t\t\thasvalidtoken=\"true\"\n\t\t\telse\n\t\t\t\t\
-    echo \"Token is invalid.\"\n\t\t\tfi\n\t\tfi\n\tdone\n\n\n\n\tif $hasvalidtoken\n\
-    \tthen\n\t\techo \"User $user has a valid token.\"\n\telse\n\t\tfor group in $(\
-    \ kubectl get group -ojson |  jq -r \".items[] | select( .users | index(\\\"$user\\\
-    \") ) | .metadata.name\" )\n\t\tdo\n\t\t\toc adm groups remove-users \"$group\"\
-    \ \"$user\"\n\t\tdone\n\tfi\n\techo\ndone\n"
+  prune: "#!/bin/bash\n\nset -feo pipefail\nIFS='\n'\n\nfor user in $( kubectl get\
+    \ user -ojson | jq -r '.items[].metadata.name' )\ndo\n\thasvalidtoken=$(kubectl\
+    \ get oauthaccesstoken -ojson | \\\n\t\tjq --arg user \"$user\" -r '[ .items[]\
+    \ | select(.userName == $user) | (.metadata.creationTimestamp | fromdate) + .expiresIn\
+    \ > now ] | any')\n\n\tif $hasvalidtoken\n\tthen\n\t\techo \"User $user has a\
+    \ valid token.\"\n\telse\n\t\tfor group in $( kubectl get group -ojson |  jq -r\
+    \ \".items[] | select( .users | index(\\\"$user\\\") ) | .metadata.name\" )\n\t\
+    \tdo\n\t\t\toc adm groups remove-users \"$group\" \"$user\"\n\t\tdone\n\tfi\n\t\
+    echo\ndone\n"
 kind: ConfigMap
 metadata:
   labels:
@@ -130,8 +125,8 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   labels:
-    name: group-prune-58542835
-  name: group-prune-58542835
+    name: group-prune-da682af0
+  name: group-prune-da682af0
   namespace: openshift-config
 spec:
   completions: 1
@@ -139,7 +134,7 @@ spec:
   template:
     metadata:
       labels:
-        name: group-prune-58542835
+        name: group-prune-da682af0
     spec:
       containers:
         - args: []
