@@ -91,24 +91,10 @@ local cronJob = kube.CronJob('group-prune') + namespace {
   },
 };
 
-local job = kube.Job('group-prune-' + std.substr(std.sha1(std.manifestJsonMinified({
-  data: cm.data,
-  jobTemplate: jobTemplate,
-})), 0, 8)) + namespace {
-  spec+: jobTemplate.spec {
-    template+: {
-      spec+: {
-        restartPolicy: 'OnFailure',
-      },
-    },
-  },
-};
-
 [
   role,
   sa,
   rb,
   cm,
   cronJob,
-  job,
 ]

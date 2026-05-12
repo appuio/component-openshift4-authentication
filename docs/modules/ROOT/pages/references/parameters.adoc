@@ -204,7 +204,7 @@ Parameters to enable and configure the automatic removing of users from groups i
 
 [horizontal]
 type:: boolean
-default:: True
+default:: `true`
 
 Whether to enable automatic group pruning.
 
