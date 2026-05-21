@@ -208,6 +208,15 @@ default:: `true`
 
 Whether to enable automatic group pruning.
 
+== `excluded_idps`
+
+[horizontal]
+type:: list
+default:: `[]`
+
+A list of OpenShift IdP identifiers (keys of component parameter `identityProviders`) whose synced groups should be skipped by the group pruning script.
+Parameter entries can be removed by providing them again prefixed with `~`.
+
 === `schedule`
 
 [horizontal]

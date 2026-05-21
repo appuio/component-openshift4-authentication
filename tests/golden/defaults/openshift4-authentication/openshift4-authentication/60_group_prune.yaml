@@ -166,7 +166,9 @@ spec:
             - args: []
               command:
                 - /usr/local/bin/prune
-              env: []
+              env:
+                - name: EXCLUDED_IDP
+                  value: '[]'
               image: quay.io/appuio/oc:v4.20
               imagePullPolicy: IfNotPresent
               name: group-prune
