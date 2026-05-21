@@ -60,6 +60,11 @@ local jobTemplate = {
           prune: kube.Container('group-prune') {
             image: params.images.oc.image + ':' + params.images.oc.tag,
             command: [ '/usr/local/bin/prune' ],
+            env_: {
+              EXCLUDED_IDP: std.manifestJsonMinified(
+                com.renderArray(params.groupPrune.excluded_idps)
+              ),
+            },
             volumeMounts_+: {
               scripts: {
                 mountPath: '/usr/local/bin/prune',

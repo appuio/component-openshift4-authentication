@@ -42,6 +42,7 @@ parameters:
 
     groupPrune:
       enabled: true
+      excluded_idps: []
       serviceAccountName: group-prune
       nodeSelector:
         node-role.kubernetes.io/infra: ''
