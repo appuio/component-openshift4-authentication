@@ -1,23 +1,80 @@
 #!/bin/bash
+# vim: et:sw=4
+#
+# The script processes all OpenShift gropus which have annotation
+# `oauth.openshift.io/generated=true`. It iterates through `.users` of each of
+# those groups and removes any users who don't have an active oauthaccesstoken
+# on the cluster.
+#
+# Optionally, groups synced from certain IdPs can be skipped by adding the
+# OpenShift IdP identifier (i.e. value of `spec.identityProviders[*].name` in
+# the `oauth.config.openshift.io/cluster` resource) to the environment
+# variable ${EXCLUDED_IDP}. The script expects that this variable is either
+# empty or a valid JSON array.
+#
+# Note that the script uses `kubectl get -ojson | jq -r '...' | while read` to
+# process the list of groups and users in each group line by line. Doing so
+# ensures that groups and users which have a space in their `.metadata.name`
+# are processed correctly.
+#
+# The script can be tested without actually making any changes by setting
+# environment variable `DRY_RUN` to a non-empty string. To test the script you
+# must be logged in to the target cluster and you must enable system:admin
+# impersonation.
 
 set -feo pipefail
-IFS='
-'
 
-# NOTE: We use this specific command (which produces the list of users delimited by newlines) in conjunction with the `IFS='\n'` configured above to ensure that the script correctly handles user names that contain a space, since OpenShift allows creating `User` resources which contain a space in `metadata.name`.
-for user in $( kubectl get user -ojson | jq -r '.items[].metadata.name' )
-do
-	hasvalidtoken=$(kubectl get oauthaccesstoken -ojson | \
-		jq --arg user "$user" -r '[ .items[] | select(.userName == $user) | (.metadata.creationTimestamp | fromdate) + .expiresIn > now ] | any')
+# NOTE(sg): We can't use `--dry-run=server` with `oc adm groups remove-users`
+# because that command ignores the `--dry-run=server` flag.
+dry=
+if [ -n "$DRY_RUN" ]; then
+    echo "Enabling dry-run mode"
+    dry="echo"
+fi
 
-	if $hasvalidtoken
-	then
-		echo "User $user has a valid token."
-	else
-		for group in $( kubectl get group -ojson |  jq --arg user "$user" -r '.items[] | select( .users | index($user) ) | .metadata.name' )
-		do
-			oc adm groups remove-users "$group" "$user"
-		done
-	fi
-	echo
+excluded_idp="${EXCLUDED_IDP:-[]}"
+
+excluded_list=$(jq -n -r --argjson excluded "${excluded_idp}" '$excluded|join(", ")')
+echo "INFO: Skipping groups synced from the following IdPs: ${excluded_list}"
+
+kubectl get group -ojson | jq -r \
+    '.items[]
+    | select(.metadata.annotations."oauth.openshift.io/generated"=="true")
+    | .metadata.name' | \
+while read -r group; do
+    echo "==================="
+    echo "Processing ${group}"
+    groupjson=$( kubectl get group "${group}" -ojson )
+    idp=$(jq -n -r --argjson group "${groupjson}" \
+        '$group.metadata.annotations
+         | keys[]
+         | select(test("^oauth\\.openshift\\.io/idp\\."))
+         | sub("^oauth\\.openshift\\.io/idp\\."; "")'
+    )
+    is_excluded=$(jq -r -n \
+        --argjson excluded "${excluded_idp}" \
+        --arg idp "${idp}" \
+        '[ $excluded[] | . == $idp ] | any')
+    if $is_excluded
+    then
+        echo "Skipping group ${group} synced from excluded IdP ${idp}"
+        continue
+    fi
+    jq -n -r --argjson group "${groupjson}" '$group.users[]' | \
+    while read -r user; do
+        echo " > Checking ${user}"
+        hasvalidtoken=$(kubectl get oauthaccesstoken -ojson | \
+            jq --arg user "${user}" -r '[
+                .items[]
+                | select(.userName == $user)
+                | (.metadata.creationTimestamp | fromdate) + .expiresIn > now
+            ] | any')
+        if $hasvalidtoken; then
+            echo " > User ${user} has a valid token."
+        else
+            echo " > Removing user ${user} with no valid token from ${group}."
+            ${dry} oc adm groups remove-users "${group}" "${user}"
+        fi
+    done
+    echo "==================="
 done
