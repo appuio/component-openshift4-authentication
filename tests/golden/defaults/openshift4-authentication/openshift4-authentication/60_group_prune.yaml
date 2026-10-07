@@ -143,6 +143,27 @@ metadata:
   name: group-prune
   namespace: openshift-config
 ---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    name: allow-group-prune-egress-kube-apiserver
+  name: allow-group-prune-egress-kube-apiserver
+  namespace: openshift-config
+spec:
+  egress:
+    - ports:
+        - port: '6443'
+          protocol: TCP
+        - port: '443'
+          protocol: TCP
+  ingress: []
+  podSelector:
+    matchLabels:
+      name: group-prune
+  policyTypes:
+    - Egress
+---
 apiVersion: batch/v1
 kind: CronJob
 metadata:

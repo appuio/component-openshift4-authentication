@@ -87,6 +87,31 @@ local jobTemplate = {
   },
 };
 
+local netpol = kube.NetworkPolicy('allow-group-prune-egress-kube-apiserver') + namespace {
+  spec+: {
+    podSelector: {
+      matchLabels: {
+        name: 'group-prune',
+      },
+    },
+    policyTypes: [ 'Egress' ],
+    egress: [
+      {
+        ports: [
+          {
+            port: '6443',
+            protocol: 'TCP',
+          },
+          {
+            port: '443',
+            protocol: 'TCP',
+          },
+        ],
+      },
+    ],
+  },
+};
+
 local cronJob = kube.CronJob('group-prune') + namespace {
   spec+: {
     schedule: params.groupPrune.schedule,
@@ -101,5 +126,6 @@ local cronJob = kube.CronJob('group-prune') + namespace {
   sa,
   rb,
   cm,
+  netpol,
   cronJob,
 ]
