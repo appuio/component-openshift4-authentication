@@ -169,7 +169,7 @@ spec:
               env:
                 - name: EXCLUDED_IDP
                   value: '[]'
-              image: quay.io/appuio/oc:v4.20
+              image: quay.io/appuio/oc:v4.22
               imagePullPolicy: IfNotPresent
               name: group-prune
               ports: []

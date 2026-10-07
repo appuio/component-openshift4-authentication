@@ -60,6 +60,7 @@ apiVersion: espejote.io/v1alpha1
 kind: ManagedResource
 metadata:
   annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
     syn.tools/source: https://github.com/appuio/component-openshift4-authentication.git
   labels:
     app.kubernetes.io/component: openshift4-authentication
