@@ -99,11 +99,11 @@ local netpol = kube.NetworkPolicy('allow-group-prune-egress-kube-apiserver') + n
       {
         ports: [
           {
-            port: '6443',
+            port: 6443,
             protocol: 'TCP',
           },
           {
-            port: '443',
+            port: 443,
             protocol: 'TCP',
           },
         ],
